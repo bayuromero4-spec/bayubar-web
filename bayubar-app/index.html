@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070a12">
+<meta name="description" content="BAYU BAR · Bebidas seleccionadas con delivery en San Miguel de Pallaques, Cajamarca. Elige, confirma y recibe en tu puerta.">
+<meta property="og:title" content="BAYU BAR — Drinks & Delivery">
+<meta property="og:description" content="Bebidas seleccionadas con delivery en San Miguel de Pallaques.">
+<meta property="og:image" content="./assets/logo-bayubar.webp">
+<title>BAYU BAR — Drinks &amp; Delivery</title>
+<link rel="icon" type="image/webp" href="./assets/logo-bayubar-sm.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/base.css">
+<link rel="stylesheet" href="./css/store.css">
+</head>
+<body>
+
+<div id="demoBanner" class="demo-banner" hidden>Modo demostración: aún no conectaste la base de datos. Los productos son de ejemplo y los pedidos se envían solo por WhatsApp.</div>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#inicio" aria-label="BAYU BAR, inicio">
+      <img src="./assets/logo-bayubar-sm.webp" alt="" width="52" height="52">
+      <span class="brand-txt"><b>BAYU<span>BAR</span></b><small>DRINKS · DELIVERY</small></span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#combos" id="navCombos" hidden>Combos y ofertas</a>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#delivery">Delivery</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <button class="cartbtn" id="cartOpen" type="button" aria-label="Abrir mi pedido">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span class="cartlbl">Mi pedido</span>
+      <b class="badge" id="cartCount" aria-live="polite">0</b>
+    </button>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <div class="wrap hero-in">
+      <div class="hero-copy">
+        <div class="pill rise" style="--d:.05s"><i class="live"></i> SAN MIGUEL DE PALLAQUES · CAJAMARCA</div>
+        <h1 class="dis">
+          <span class="w"><span style="--d:.1s">La</span></span> <span class="w"><span style="--d:.18s">noche</span></span><br>
+          <span class="w"><span style="--d:.26s">tiene</span></span> <span class="w"><span class="it" style="--d:.34s">otro</span></span><br>
+          <span class="w"><span class="it" style="--d:.42s">sabor.</span></span>
+        </h1>
+        <p class="lead rise" style="--d:.65s">Elige tus bebidas en segundos y nosotros las llevamos hasta tu puerta.</p>
+        <div class="actions rise" style="--d:.8s">
+          <a class="btn big pulse" href="#catalogo">Pedir ahora
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn big ghost" id="waHero" href="#contacto" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+        </div>
+        <ul class="proof rise" style="--d:.95s"><li>Selección BAYU</li><li id="proofFree" hidden>Delivery gratis por reapertura</li><li>Atención +18</li></ul>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="glow"></div>
+        <img class="float" src="./assets/logo-bayubar.webp" alt="" width="460" height="460" fetchpriority="high">
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap benefits">
+    <div class="benefit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><div><b>Delivery a tu puerta</b><small id="benefitDelivery">Cobertura en San Miguel</small></div></div>
+    <div class="benefit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg><div><b>Pide en segundos</b><small>Un toque por producto</small></div></div>
+    <div class="benefit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.8L3 21l1.3-4.4A9 9 0 1 1 21 12Z"/></svg><div><b>Atención directa</b><small>Confirmamos por WhatsApp</small></div></div>
+  </section>
+
+  <section class="wrap combos" id="combos" hidden>
+    <div class="sec-head">
+      <div><p class="overline">Combos y promociones</p><h2 class="dis">Combos listos <span class="it">para pedir.</span></h2></div>
+      <p class="sec-note">Varios productos en un solo toque. Puedes sumar más bebidas del catálogo a tu pedido.</p>
+    </div>
+    <div class="grid combo-grid" id="comboGrid"></div>
+  </section>
+
+  <section class="wrap catalog" id="catalogo">
+    <div class="sec-head">
+      <div><p class="overline">Descubre la selección</p><h2 class="dis">Encuentra tu <span class="it">favorito.</span></h2></div>
+      <label class="search"><span class="sr-only">Buscar bebida</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="Buscar una bebida…" autocomplete="off" maxlength="60">
+      </label>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Categorías"></div>
+    <p class="count" id="resultCount" aria-live="polite"></p>
+    <div class="grid" id="grid" aria-busy="true"></div>
+    <div id="gridMsg"></div>
+  </section>
+
+  <section class="wrap" id="delivery">
+    <div class="promo" id="promo">
+      <div class="orb o3"></div>
+      <div class="promo-txt">
+        <p class="overline amber" id="promoOver">Cobertura de delivery</p>
+        <h2 class="dis" id="promoTitle">Llevamos tu pedido <span class="it">hasta tu puerta.</span></h2>
+        <p id="promoText">Elige tu zona al confirmar el pedido y verás el costo de delivery antes de enviarlo.</p>
+      </div>
+      <a class="btn big" href="#catalogo">Armar mi pedido</a>
+    </div>
+  </section>
+
+  <section class="wrap story" id="contacto">
+    <div>
+      <p class="overline">El regreso de BAYU BAR</p>
+      <h2 class="dis">Volvemos con<br><span class="it">la misma actitud.</span></h2>
+    </div>
+    <div class="story-txt">
+      <p>BAYU BAR te acerca una selección de bebidas con una experiencia de compra simple, cercana y confiable. Hoy volvemos en formato delivery, con atención directa y el compromiso de llegar a tu puerta.</p>
+      <a class="btn ghost" id="waContact" href="#" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div class="footer-brand"><img src="./assets/logo-bayubar.webp" alt="BAYU BAR" width="110" height="110" loading="lazy"><p>DRINKS · DELIVERY<br>San Miguel de Pallaques · Cajamarca</p></div>
+    <small>Servicio exclusivo para mayores de 18 años. Se podrá solicitar documento de identidad al momento de la entrega. Tomar bebidas alcohólicas en exceso es dañino.</small>
+    <a class="admin-link" href="./admin.html">Administración</a>
+  </div>
+</footer>
+
+<div class="dock" id="dock" hidden>
+  <button class="dockbtn" id="dockBtn" type="button" aria-label="Ver mi pedido">
+    <span class="dockcount" id="dockCount">0</span>
+    <span class="docklbl">Ver mi pedido</span>
+    <b id="dockTotal">S/ 0.00</b>
+  </button>
+</div>
+
+<!-- Pedido: carrito → datos → confirmación -->
+<dialog id="cartDlg" aria-labelledby="dlgTitle">
+  <div class="dlg">
+    <div class="dlg-head">
+      <div><p class="overline" id="dlgOver">Tu selección</p><h2 class="dis" id="dlgTitle">Mi pedido</h2></div>
+      <button class="xbtn" id="dlgClose" type="button" aria-label="Cerrar">×</button>
+    </div>
+
+    <section data-step="cart">
+      <div id="cartLines" class="lines"></div>
+      <div class="dlg-foot">
+        <div class="row"><span>Subtotal</span><b class="num" id="cartSub">S/ 0.00</b></div>
+        <p class="note" id="cartDeliveryNote"></p>
+        <button class="btn block big" id="toCheckout" type="button">Continuar</button>
+      </div>
+    </section>
+
+    <section data-step="checkout" hidden>
+      <form id="orderForm" novalidate>
+        <div class="form-body">
+          <label class="field">Nombre completo<input id="fName" name="name" type="text" autocomplete="name" maxlength="80" required placeholder="Tu nombre"></label>
+          <label class="field">Número de celular<input id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" required placeholder="Ej. 987 654 321"></label>
+          <label class="field">Zona de entrega<select id="fZone" name="zone" required></select></label>
+          <label class="field">Dirección de entrega<textarea id="fAddress" name="address" maxlength="300" required placeholder="Calle, número, barrio y referencia"></textarea></label>
+          <fieldset class="pay" aria-label="Método de pago">
+            <legend>¿Cómo deseas pagar?</legend>
+            <label class="radio"><input type="radio" name="payment" value="Yape / Plin" checked><span>Yape / Plin</span></label>
+            <label class="radio"><input type="radio" name="payment" value="Efectivo"><span>Efectivo</span></label>
+          </fieldset>
+          <label class="field">Indicaciones (opcional)<input id="fNote" name="note" type="text" maxlength="200" placeholder="Ej. tocar el timbre, pagar con S/ 100"></label>
+          <label class="check"><input type="checkbox" id="fAge" required><span>Confirmo que soy mayor de 18 años y podrán pedirme mi documento al recibir.</span></label>
+          <div id="formError" class="error-box" role="alert" hidden></div>
+        </div>
+        <div class="dlg-foot">
+          <div class="sum">
+            <div class="row"><span>Productos</span><span class="num" id="sumSub">S/ 0.00</span></div>
+            <div class="row"><span>Delivery</span><span class="num" id="sumFee">Elige tu zona</span></div>
+            <div class="row total"><span>Total</span><b class="num" id="sumTotal">S/ 0.00</b></div>
+          </div>
+          <div class="two">
+            <button class="btn ghost" id="backToCart" type="button">Volver</button>
+            <button class="btn" id="submitOrder" type="submit">Confirmar pedido</button>
+          </div>
+          <p class="note">No se cobra nada en esta página. El pago se coordina al confirmar.</p>
+        </div>
+      </form>
+    </section>
+
+    <section data-step="done" hidden>
+      <div class="done">
+        <div class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></div>
+        <h3 class="dis">¡Pedido recibido!</h3>
+        <p>Tu número de pedido es <b id="doneNumber" class="num"></b>.</p>
+        <p class="done-total">Total a pagar: <b class="num" id="doneTotal"></b></p>
+        <p class="muted">Envíanos la confirmación por WhatsApp para coordinar la entrega.</p>
+        <a class="btn big block" id="doneWa" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <button class="btn ghost block" id="doneClose" type="button">Seguir comprando</button>
+      </div>
+    </section>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="./js/config.js"></script>
+<script src="./js/common.js"></script>
+<script src="./js/store.js"></script>
+</body>
+</html>

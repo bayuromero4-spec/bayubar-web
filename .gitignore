@@ -1,0 +1,16 @@
+﻿.env
+.env.*
+!.env.example
+
+**/supabase/.temp/
+**/supabase/.branches/
+**/supabase/admins.sql
+**/supabase/00_limpiar_tablas_antiguas.sql
+
+**/node_modules/
+**/dist/
+
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

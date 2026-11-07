@@ -1,0 +1,3 @@
+# La base de datos llama a esta función sin sesión de usuario; la protege NOTIFY_SECRET.
+[functions.notify-order]
+verify_jwt = false
