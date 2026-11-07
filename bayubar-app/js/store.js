@@ -25,7 +25,7 @@
   // ------------------------------------------------------------ estado
   const S = {
     demo: !BB.configured,
-    products: [], combos: [], zones: [],
+    products: [], combos: [], zones: [], promotions: [],
     settings: { whatsapp: cfg.WHATSAPP || '51960577902', free_delivery_enabled: false, free_delivery_min: 0 },
     cart: ls.get('bb_cart_v3', {}),     // clave = id de producto, o "c:<id>" para combos
     cat: 'Todo', query: '', loadedAt: 0, submitting: false, order: null
@@ -97,18 +97,20 @@
         const ps = c.items.map((i) => ({ i, p: byId2(S.products, i.product_id) }));
         return { ...c, regular_price: ps.reduce((t, x) => t + x.i.qty * (x.p ? unitPrice(x.p) : 0), 0), available_units: Math.min(...ps.map((x) => (x.p ? Math.floor(x.p.stock / x.i.qty) : 0))) };
       });
-      S.settings.free_delivery_enabled = true;
+      S.settings.free_delivery_enabled = true; S.promotions = [];
       $('#demoBanner').hidden = false;
     } else {
-      const [pr, co, zo, se] = await Promise.all([
-        sb.from('public_products').select('id,name,category,size,description,price,promo_price,promo_until,image_url,stock,available').order('category').order('name'),
+      const [pr, co, zo, se, pm] = await Promise.all([
+        sb.from('public_products').select('id,name,category,size,description,price,promo_price,promo_until,image_url,available').order('category').order('name'),
         sb.from('public_combos').select('id,name,description,price,image_url,ends_on,items,regular_price,available_units').order('name'),
         sb.from('delivery_zones').select('id,name,fee').eq('active', true).order('fee').order('name'),
-        sb.from('settings').select('key,value')
+        sb.from('settings').select('key,value'),
+        sb.from('public_bayu_promotion').select('*').limit(1)
       ]);
       if (pr.error) throw pr.error;
       if (zo.error) throw zo.error;
       if (se.error) throw se.error;
+      S.promotions = pm.error ? [] : (pm.data || []);
       S.products = pr.data || [];
       S.combos = co.error ? [] : (co.data || []);   // si la sección de combos falla, el catálogo sigue funcionando
       S.zones = zo.data || [];
@@ -179,6 +181,15 @@
       <div class="card-body"><div><h3>${esc(c.name)}</h3>${c.description ? `<p>${esc(c.description)}</p>` : ''}<ul class="combo-list">${list}</ul>${c.ends_on ? `<p class="until">Vigente hasta el ${esc(fmtShort(c.ends_on))}</p>` : ''}</div>
       <div class="card-foot"><span class="prices">${price}</span><span class="act">${actionsHtml(key, c.name, max, q)}</span></div></div></article>`;
   }
+  function renderPromoTicket() {
+    let el = $('#bayuGiftTicket');
+    const promo = S.promotions && S.promotions[0];
+    if (!promo) { if (el) el.remove(); return; }
+    if (!el) { el=document.createElement('section'); el.id='bayuGiftTicket'; el.className='wrap bayu-ticket'; const combos=$('#combos'); combos.parentNode.insertBefore(el,combos); }
+    const missing=Math.max(0,Number(promo.min_subtotal)-cartSub());
+    el.innerHTML=`<div class="ticket-stub"><span class="ticket-kicker">${esc(promo.ticket_code)}</span><span class="ticket-admit">REGALO</span></div><div class="ticket-copy"><p class="overline">PROMOCIÓN ESPECIAL BAYU</p><h2>${esc(promo.title)}</h2><p>${esc(promo.description||'Tu pedido tiene un regalo especial.')}</p><div class="ticket-gift">🎁 <b>${esc(promo.gift_name)}</b> × ${Number(promo.gift_qty)||1}</div><p class="ticket-progress">${missing>0?`Agrega ${money(missing)} más para desbloquear tu regalo.`:'¡Beneficio desbloqueado! El regalo se añadirá automáticamente al confirmar tu pedido.'}</p></div>`;
+  }
+
   function renderCombos() {
     const sec = $('#combos'); const has = S.combos.length > 0;
     sec.hidden = !has; $('#navCombos').hidden = !has;
@@ -229,9 +240,11 @@
     renderBar(true);
     if ($('#cartDlg').open && stepNow() === 'cart') renderCart();
     if ($('#cartDlg').open && stepNow() === 'checkout') renderSummary();
+    renderPromoTicket();
   }
   function renderBar(bump) {
     const n = cartCount(); const sub = cartSub();
+    renderPromoTicket();
     $('#cartCount').textContent = n;
     $('#dockCount').textContent = n; $('#dockTotal').textContent = money(sub);
     $('#dock').hidden = n === 0 || $('#cartDlg').open;
@@ -290,6 +303,7 @@
     const name = $('#fName').value.trim(); const phone = $('#fPhone').value.trim(); const address = $('#fAddress').value.trim();
     const payment = (document.querySelector('input[name="payment"]:checked') || {}).value;
     const note = $('#fNote').value.trim(); const zone = zoneSel();
+    const ticketCode = ($('#fTicket')?.value || '').trim().toUpperCase();
     if (name.length < 2) return showFormError('Escribe tu nombre completo.');
     if (!/^\+?[0-9\s-]{7,16}$/.test(phone)) return showFormError('Escribe un número de celular válido.');
     if (!zone) return showFormError('Elige tu zona de entrega.');
@@ -306,14 +320,16 @@
       if (!S.demo) {
         const { data, error } = await sb.rpc('place_order', {
           p_name: name, p_phone: phone, p_address: address, p_zone: zone.id, p_payment: payment,
-          p_note: note || null,
+          p_note: note || null, p_ticket_code: ticketCode || null, p_age_confirmed: $('#fAge').checked, p_marketing_consent: $('#fMarketing')?.checked === true,
           p_items: items.map((x) => (x.combo ? { combo_id: x.item.id, qty: x.q } : { product_id: x.item.id, qty: x.q }))
         });
         if (error) throw error;
         num = data.number; finalTotal = Number(data.total); finalFee = Number(data.delivery_fee);
+        if (data.promotion_code) S.appliedPromotion = { code: data.promotion_code, gift: data.gift_name, qty: data.gift_qty };
       }
-      const text = orderText(items, num, name, zone, address + (note ? ` (${note})` : ''), payment, finalFee, finalTotal);
+      const text = orderText(items, num, name, zone, address + (note ? ` (${note})` : ''), payment, finalFee, finalTotal) + (S.appliedPromotion ? `\nTicket aplicado: ${S.appliedPromotion.code}\nRegalo: ${S.appliedPromotion.qty} × ${S.appliedPromotion.gift}` : '');
       S.order = { num, total: finalTotal, text };
+      S.appliedPromotion = null; if ($('#fTicket')) $('#fTicket').value = '';
       S.cart = {}; saveCart();
       ls.set('bb_customer', { name, phone, address, zone: zone.id });
       $('#doneNumber').textContent = num || '(modo demostración)';
@@ -353,6 +369,7 @@
     const saved = ls.get('bb_customer', {});
     $('#fZone').innerHTML = '<option value="">Elige tu zona…</option>' + S.zones.map((z) => `<option value="${esc(z.id)}">${esc(z.name)}${S.settings.free_delivery_enabled === true && cartSub() >= Number(S.settings.free_delivery_min || 0) ? '' : ' · ' + money(z.fee)}</option>`).join('');
     if (saved.zone && S.zones.some((z) => z.id === saved.zone)) $('#fZone').value = saved.zone;
+    if ($('#fTicket')) $('#fTicket').value = '';
   }
 
   // ------------------------------------------------------------ eventos
@@ -377,6 +394,7 @@
   });
   $('#backToCart').addEventListener('click', () => { step('cart'); renderCart(); });
   $('#fZone').addEventListener('change', renderSummary);
+  $('#fTicket')?.addEventListener('input', (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''); });
   $('#orderForm').addEventListener('submit', submitOrder);
   $('#orderForm').addEventListener('input', () => showFormError(''));
   document.addEventListener('visibilitychange', () => {
@@ -389,7 +407,7 @@
     skeletons(); renderSettings(); renderBar(false);
     try {
       await load();
-      renderSettings(); renderCombos(); renderChips(); renderGrid(); renderBar(false);
+      renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderBar(false);
     } catch (e) {
       $('#grid').innerHTML = ''; $('#grid').setAttribute('aria-busy', 'false');
       $('#gridMsg').innerHTML = `<div class="msg"><h3 class="dis">No pudimos cargar el catálogo</h3><p>${esc(errMsg(e))}</p><button class="btn" id="retry" type="button">Reintentar</button></div>`;
