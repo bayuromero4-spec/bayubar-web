@@ -100,16 +100,17 @@
   // =================================================================== datos
   async function q(promise) { const { data, error } = await promise; if (error) throw error; return data || []; }
   async function loadCore() {
-    const [products, orders, requests, zones, settings, profiles, combos] = await Promise.all([
+    const [products, orders, requests, zones, settings, profiles, combos, promotions] = await Promise.all([
       q(sb.from('products').select('*').order('name')),
       q(sb.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }).limit(300)),
       q(sb.from('change_requests').select('*').order('requested_at', { ascending: false }).limit(200)),
       q(sb.from('delivery_zones').select('*').order('name')),
       q(sb.from('settings').select('key,value')),
       q(sb.from('profiles').select('id,email,full_name,role,active')),
-      q(sb.from('combos').select('*, combo_items(product_id, qty)').order('name'))
+      q(sb.from('combos').select('*, combo_items(product_id, qty)').order('name')),
+      q(sb.from('bayu_promotions').select('*').order('created_at', { ascending: false }))
     ]);
-    A.d.combos = combos; A.d.products = products; A.d.orders = orders; A.d.requests = requests; A.d.zones = zones; A.d.profiles = profiles;
+    A.d.promotions = promotions; A.d.combos = combos; A.d.products = products; A.d.orders = orders; A.d.requests = requests; A.d.zones = zones; A.d.profiles = profiles;
     A.d.settings = {}; settings.forEach((r) => { A.d.settings[r.key] = r.value; });
   }
   const pendingCount = () => (A.d.requests || []).filter((r) => r.status === 'pendiente').length;
@@ -148,7 +149,7 @@
   // =================================================================== navegación
   const VIEWS = [
     ['resumen', 'Resumen'], ['pedidos', 'Pedidos'], ['productos', 'Productos'], ['promos', 'Combos y promos'], ['inventario', 'Inventario'],
-    ['compras', 'Compras'], ['gastos', 'Gastos'], ['reportes', 'Reportes', true], ['aprobaciones', 'Aprobaciones'], ['ajustes', 'Ajustes']
+    ['compras', 'Compras'], ['gastos', 'Gastos'], ['clientes', 'Clientes y puntos'], ['marketing', 'Marketing'], ['caja', 'Caja'], ['delivery', 'Repartos'], ['sedes', 'Sedes', true], ['reportes', 'Reportes', true], ['aprobaciones', 'Aprobaciones'], ['ajustes', 'Ajustes']
   ];
   function renderTabs() {
     $('#tabs').innerHTML = VIEWS.filter((v) => !v[2] || isOwner()).map(([id, label]) => {
@@ -262,7 +263,7 @@
         return `<article class="order ${o.status === 'nuevo' ? 'new' : ''}">
           <div class="order-top"><b>${esc(o.number)}</b>${pill(o.status)}<span style="color:var(--muted);font-size:14px">${esc(fmtDateTime(o.created_at))}</span></div>
           <div class="order-meta"><span>Cliente: <b>${esc(o.customer_name)}</b></span><span>Celular: <b><a href="tel:${esc(o.phone)}">${esc(o.phone)}</a></b></span><span>Zona: <b>${esc(o.zone_name || '—')}</b></span><span>Pago: <b>${esc(o.payment)}</b></span><span style="grid-column:1/-1">Dirección: <b>${esc(o.address)}</b></span>${o.note ? `<span style="grid-column:1/-1">Indicaciones: <b>${esc(o.note)}</b></span>` : ''}</div>
-          <ul class="order-items">${items.map((i) => `<li><span>${i.qty} × ${esc(i.product_name)}</span><span class="num">${money(i.qty * i.unit_price)}</span></li>`).join('')}
+          <ul class="order-items">${items.map((i) => `<li><span>${i.qty} × ${esc(i.product_name)}${i.is_gift ? ' · REGALO' : ''}</span><span class="num">${i.is_gift ? 'GRATIS' : money(i.qty * i.unit_price)}</span></li>`).join('')}
             <li style="color:var(--muted)"><span>Delivery</span><span class="num">${num(o.delivery_fee) === 0 ? 'Gratis' : money(o.delivery_fee)}</span></li></ul>
           <div class="order-foot"><b class="num" style="font-size:20px">Total ${money(o.total)}</b>
             <div class="btns">
@@ -538,6 +539,7 @@
   VIEW.promos = async function () {
     const C = A.d.combos || []; const P = A.d.products.filter((p) => p.active);
     const offers = A.d.products.filter((p) => p.promo_price !== null && p.promo_price !== undefined);
+    const gifts = A.d.promotions || [];
     const today = todayLima();
     const comboCard = (c) => {
       const items = (c.combo_items || []).map((i) => `${i.qty} × ${esc(prodName(i.product_id))}`).join(' · ');
@@ -554,8 +556,36 @@
       <section class="panel"><h3 class="dis" style="font-size:20px;margin-bottom:10px">Combos</h3>
         ${C.length ? `<div class="list">${C.map(comboCard).join('')}</div>` : '<p class="empty-state">Aún no hay combos. Crea el primero con “Nuevo combo”.</p>'}</section>
       <section class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><h3 class="dis" style="font-size:20px">Ofertas por producto</h3><button class="btn ghost sm" type="button" data-act="offernew" ${P.length ? '' : 'disabled'}>+ Poner en oferta</button></div>
-        ${offers.length ? `<div class="list">${offers.map(offerCard).join('')}</div>` : '<p class="empty-state">Ningún producto está en oferta.</p>'}</section>`;
+        ${offers.length ? `<div class="list">${offers.map(offerCard).join('')}</div>` : '<p class="empty-state">Ningún producto está en oferta.</p>'}</section>
+      <section class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><div><h3 class="dis" style="font-size:20px">Tickets BAYU · Regalos</h3><p class="sub">El regalo se agrega y descuenta del inventario automáticamente cuando el pedido cumple el mínimo.</p></div><button class="btn" type="button" data-act="giftpromonew" ${isOwner() && P.length ? '' : 'disabled'}>+ Crear ticket</button></div>
+        ${gifts.length ? `<div class="list">${gifts.map((g) => { const pr=A.d.products.find(x=>x.id===g.gift_product_id); return `<div class="item"><div class="main"><b>${esc(g.title)} · ${esc(g.ticket_code)}</b><small>Desde ${money(g.min_subtotal)} · Regalo: ${esc(pr?pr.name:'Producto')} × ${g.gift_qty}${g.ends_on?' · hasta '+esc(fmtDate(g.ends_on)):''} · ${g.active?'Activo':'Pausado'} · Usos ${Number(g.uses_count||0)}${g.max_uses ? ' / '+Number(g.max_uses) : ' · ilimitados'}</small><small>${esc(g.description||'')}</small></div><div style="display:flex;gap:8px;flex-wrap:wrap">${isOwner()?`<button class="btn ghost sm" type="button" data-act="giftpromoedit" data-id="${esc(g.id)}">Editar</button><button class="btn ghost sm" type="button" data-act="giftpromotoggle" data-id="${esc(g.id)}">${g.active?'Pausar':'Activar'}</button>`:''}</div></div>`; }).join('')}</div>` : '<p class="empty-state">Todavía no hay tickets ni regalos configurados.</p>'}</section>`;
   };
+
+  function giftPromoForm(g) {
+    if (!isOwner()) { toast('Solo el dueño puede crear tickets promocionales.', 'err'); return; }
+    const products = A.d.products.filter(p => p.active);
+    if (!products.length) { toast('Primero registra un producto para regalar.', 'err'); return; }
+    openForm({ title: g ? 'Editar ticket BAYU' : 'Crear ticket BAYU', ok: 'Guardar ticket', wide: true,
+      body: `<label class="field">Título visible<input id="gpTitle" maxlength="90" required value="${esc(g?.title||'')}" placeholder="Ej. ¡Tu compra viene con regalo!"></label>
+        <label class="field">Mensaje<input id="gpDesc" maxlength="240" value="${esc(g?.description||'')}" placeholder="Ej. Llévate unos snacks por tu compra."></label>
+        <div class="grid2"><label class="field">Código del ticket<input id="gpCode" maxlength="24" required value="${esc(g?.ticket_code||'BAYU-REGALO')}" placeholder="BAYU-REGALO"></label>
+        <label class="field">Compra mínima (S/)<input id="gpMin" type="number" min="0" step="0.01" required value="${g?num(g.min_subtotal):50}"></label></div>
+        <div class="grid2"><label class="field">Producto de regalo<select id="gpProduct">${products.map(p=>`<option value="${esc(p.id)}" ${g?.gift_product_id===p.id?'selected':''}>${esc(p.name)} · stock ${p.stock}</option>`).join('')}</select></label>
+        <label class="field">Cantidad de regalo<input id="gpQty" type="number" min="1" max="10" value="${g?.gift_qty||1}" required></label></div>
+        <div class="grid2"><label class="field">Usos máximos (opcional)<input id="gpMax" type="number" min="1" step="1" value="${g?.max_uses||''}"><span class="hint">Vacío = usos ilimitados.</span></label><label class="field">Válido desde<input id="gpStart" type="date" value="${esc(g?.starts_on||'')}"></label><label class="field">Válido hasta<input id="gpEnd" type="date" value="${esc(g?.ends_on||'')}"></label></div>
+        <label class="field"><span><input id="gpActive" type="checkbox" ${g?.active===false?'':'checked'}> Ticket activo</span><span class="hint">El regalo se entrega automáticamente al cumplir el monto mínimo. El inventario se descuenta en Supabase.</span></label>`,
+      submit: async () => {
+        const title=$('#gpTitle').value.trim(), code=$('#gpCode').value.trim(), min=$('#gpMin').value, qty=Number($('#gpQty').value), start=$('#gpStart').value, end=$('#gpEnd').value, maxRaw=$('#gpMax').value, maxUses=maxRaw===''?null:Number(maxRaw);
+        if(title.length<3) throw new Error('Escribe un título de al menos 3 caracteres.');
+        if(!code || !min || Number(min)<0) throw new Error('Completa el código y el monto mínimo.');
+        if(!Number.isInteger(qty)||qty<1||qty>10) throw new Error('La cantidad debe estar entre 1 y 10.');
+        if(maxUses!==null&&(!Number.isInteger(maxUses)||maxUses<1)) throw new Error('Los usos máximos deben ser un entero mayor que cero.');
+        if(start && end && end<start) throw new Error('La fecha final no puede ser anterior a la inicial.');
+        const {error}=await sb.rpc('save_bayu_promotion',{p_id:g?.id||null,p_payload:{title,description:$('#gpDesc').value.trim(),ticket_code:code,min_subtotal:Number(min),gift_product_id:$('#gpProduct').value,gift_qty:qty,max_uses:maxUses,starts_on:start||null,ends_on:end||null,active:$('#gpActive').checked}});
+        if(error) throw error; toast('Ticket BAYU guardado.','ok');
+      }
+    });
+  }
 
   function comboForm(c) {
     const isNew = !c; let imageUrl = c ? (c.image_url || '') : '';
@@ -652,6 +682,62 @@
       <h3 style="margin:26px 0 12px">Historial</h3>${done.length ? done.map((r) => card(r, false)).join('') : '<p class="empty-state">Aún no hay solicitudes revisadas.</p>'}`;
   };
 
+  // =================================================================== FASE 2 · CLIENTES Y FIDELIZACIÓN
+  VIEW.clientes = async function () {
+    const [customers,rewards,tx]=await Promise.all([
+      q(sb.from('customers').select('*').order('last_order_at',{ascending:false}).limit(250)),
+      q(sb.from('loyalty_rewards').select('*').order('points_cost')),
+      q(sb.from('loyalty_transactions').select('id,points,kind,note,created_at').order('created_at',{ascending:false}).limit(30))
+    ]);
+    const points=customers.reduce((n,c)=>n+num(c.points_balance),0);
+    return `<div class="vhead"><div><h2 class="dis">Clientes y fidelización</h2><p class="sub">Los puntos se acreditan al marcar un pedido como entregado. Regla inicial: 1 punto por cada S/ 10.</p></div><button class="btn" data-act="rewardnew">+ Nueva recompensa</button></div>
+      <div class="kpis"><div class="kpi"><span>Clientes registrados</span><b>${customers.length}</b></div><div class="kpi"><span>Puntos en circulación</span><b>${points}</b></div><div class="kpi"><span>Recompensas activas</span><b>${rewards.filter(r=>r.active).length}</b></div></div>
+      <section class="panel"><h3>Recompensas</h3>${rewards.length?`<div class="list">${rewards.map(r=>`<div class="item"><div class="main"><b>${esc(r.title)}</b><small>${esc(r.description||'')} · ${r.points_cost} puntos · Canjes ${r.redemptions_count||0}${r.active?'':' · Pausada'}</small></div><button class="btn ghost sm" data-act="rewardtoggle" data-id="${esc(r.id)}">${r.active?'Pausar':'Activar'}</button></div>`).join('')}</div>`:'<p class="empty-state">Aún no hay recompensas.</p>'}</section>
+      <section class="panel"><h3>Base de clientes</h3>${customers.length?`<div class="tscroll"><table class="t"><thead><tr><th>Cliente</th><th>Celular</th><th class="r">Puntos</th><th class="r">Compras</th><th>Última compra</th><th></th></tr></thead><tbody>${customers.map(c=>`<tr><td>${esc(c.full_name)}</td><td>${esc(c.phone)}</td><td class="r num">${num(c.points_balance)}</td><td class="r num">${money(c.lifetime_spend)}</td><td>${c.last_order_at?esc(fmtDateTime(c.last_order_at)):'—'}</td><td><button class="btn ghost sm" data-act="customerredeem" data-id="${esc(c.id)}">Canjear</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty-state">Los clientes aparecerán después de completar y entregar pedidos. No se importaron datos históricos automáticamente.</p>'}</section>
+      <section class="panel"><h3>Movimientos recientes de puntos</h3>${tx.length?`<div class="list">${tx.map(t=>`<div class="item"><div class="main"><b>${esc(t.kind)}</b><small>${esc(t.note||'')} · ${esc(fmtDateTime(t.created_at))}</small></div><b class="num">${t.points>0?'+':''}${t.points}</b></div>`).join('')}</div>`:'<p class="empty-state">Sin movimientos todavía.</p>'}</section>`;
+  };
+
+  // =================================================================== FASE 3 · MARKETING
+  VIEW.marketing = async function () {
+    const [campaigns,customers]=await Promise.all([
+      q(sb.from('marketing_campaigns').select('*').order('created_at',{ascending:false}).limit(100)),
+      q(sb.from('customers').select('id,full_name,phone,marketing_consent,last_order_at').order('full_name').limit(500))
+    ]);
+    const eligible=customers.filter(c=>c.marketing_consent);
+    return `<div class="vhead"><div><h2 class="dis">Marketing BAYU</h2><p class="sub">Campañas con apertura manual de WhatsApp. No se envían mensajes automáticos ni se contacta a quien no dio consentimiento.</p></div><button class="btn" data-act="campaignnew">+ Crear campaña</button></div>
+      <div class="kpis"><div class="kpi"><span>Clientes registrados</span><b>${customers.length}</b></div><div class="kpi"><span>Con consentimiento</span><b>${eligible.length}</b></div><div class="kpi"><span>Campañas</span><b>${campaigns.length}</b></div></div>
+      <section class="panel"><h3>Campañas</h3>${campaigns.length?`<div class="list">${campaigns.map(c=>`<div class="item"><div class="main"><b>${esc(c.name)}</b><small>Segmento: ${esc(c.segment)} · Estado: ${esc(c.status)} · ${esc(fmtDateTime(c.created_at))}</small><small>${esc(c.message)}</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" data-act="campaignopen" data-id="${esc(c.id)}">Abrir campaña</button><button class="btn ghost sm" data-act="campaigntoggle" data-id="${esc(c.id)}">${c.status==='paused'?'Reactivar':'Pausar'}</button></div></div>`).join('')}</div>`:'<p class="empty-state">No hay campañas creadas.</p>'}</section>
+      <p class="hint">La API oficial de WhatsApp Business no está conectada. Esta fase prepara segmentación y mensajes, pero el envío se confirma manualmente desde WhatsApp.</p>`;
+  };
+
+  // =================================================================== FASE 6 · CAJA
+  VIEW.caja = async function () {
+    const [sessions,movements]=await Promise.all([
+      q(sb.from('cash_sessions').select('*').order('opened_at',{ascending:false}).limit(20)),
+      q(sb.from('cash_movements').select('*').order('created_at',{ascending:false}).limit(100))
+    ]);
+    const open=sessions.find(x=>x.status==='open');
+    const mv=open?movements.filter(m=>m.session_id===open.id):[];
+    const expected=num(open?.opening_amount)+mv.reduce((a,m)=>a+(m.kind==='income'||m.kind==='deposit'?num(m.amount):-num(m.amount)),0);
+    return `<div class="vhead"><div><h2 class="dis">Caja</h2><p class="sub">Control de efectivo separado de los gastos generales.</p></div>${open?`<button class="btn danger" data-act="cashclose" data-id="${esc(open.id)}">Cerrar caja</button>`:'<button class="btn" data-act="cashopen">Abrir caja</button>'}</div>
+      ${open?`<section class="panel"><h3>Caja abierta</h3><div class="kpis"><div class="kpi"><span>Fondo inicial</span><b>${money(open.opening_amount)}</b></div><div class="kpi"><span>Saldo esperado</span><b>${money(expected)}</b></div><div class="kpi"><span>Movimientos</span><b>${mv.length}</b></div></div><button class="btn ghost sm" data-act="cashmove" data-id="${esc(open.id)}">+ Registrar movimiento</button></section>`:'<section class="panel"><p class="empty-state">No hay una caja abierta.</p></section>'}
+      <section class="panel"><h3>Sesiones recientes</h3>${sessions.length?`<div class="list">${sessions.map(x=>`<div class="item"><div class="main"><b>${x.status==='open'?'Abierta':'Cerrada'} · ${esc(fmtDateTime(x.opened_at))}</b><small>Inicial ${money(x.opening_amount)}${x.closed_at?' · Cierre '+money(x.closing_amount||0):''}</small></div></div>`).join('')}</div>`:'<p class="empty-state">Sin sesiones de caja.</p>'}</section>`;
+  };
+
+  // =================================================================== FASE 7 · REPARTOS
+  VIEW.delivery = async function () {
+    const orders=A.d.orders.filter(o=>['nuevo','confirmado','en_camino'].includes(o.status));
+    const assignments=await q(sb.from('delivery_assignments').select('*').order('assigned_at',{ascending:false}).limit(100));
+    return `<div class="vhead"><div><h2 class="dis">Repartos</h2><p class="sub">Asignación de repartidores y control de entrega.</p></div></div>
+      <section class="panel"><h3>Pedidos activos</h3>${orders.length?`<div class="list">${orders.map(o=>{const a=assignments.find(x=>x.order_id===o.id);return `<div class="item"><div class="main"><b>${esc(o.number)} · ${esc(o.customer_name)}</b><small>${esc(o.phone)} · ${esc(o.address)} · ${money(o.total)}</small><small>${a?'Repartidor: '+esc(a.courier_name)+' · '+esc(a.delivery_status):'Sin asignar'}</small></div><button class="btn ghost sm" data-act="deliveryassign" data-id="${esc(o.id)}">${a?'Editar asignación':'Asignar'}</button></div>`}).join('')}</div>`:'<p class="empty-state">No hay pedidos activos.</p>'}</section>`;
+  };
+
+  // =================================================================== FASE 10 · SEDES
+  VIEW.sedes = async function () {
+    const rows=await q(sb.from('store_locations').select('*').order('is_primary',{ascending:false}).order('name'));
+    return `<div class="vhead"><div><h2 class="dis">Sedes</h2><p class="sub">Base para expansión. Los pedidos e inventario actuales siguen vinculados a la sede principal.</p></div><button class="btn" data-act="locationnew">+ Nueva sede</button></div><section class="panel">${rows.length?`<div class="list">${rows.map(x=>`<div class="item"><div class="main"><b>${esc(x.name)} ${x.is_primary?'· PRINCIPAL':''}</b><small>${esc(x.code)} · ${esc(x.address||'Sin dirección')} · ${x.active?'Activa':'Inactiva'}</small></div><button class="btn ghost sm" data-act="locationedit" data-id="${esc(x.id)}">Editar</button></div>`).join('')}</div>`:'<p class="empty-state">No hay sedes registradas.</p>'}</section>`;
+  };
+
   // ---- avisos push en este dispositivo
   const VAPID = (BB.cfg && BB.cfg.VAPID_PUBLIC_KEY) || '';
   const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -724,9 +810,26 @@
     });
   }
 
+  function locationForm(loc){
+    if(!isOwner()){toast('Solo el dueño puede administrar sedes.','err');return;}
+    openForm({title:loc?'Editar sede':'Nueva sede',ok:'Guardar',body:`<label class="field">Código<input id="locCode" maxlength="20" required value="${esc(loc?.code||'')}"></label><label class="field">Nombre<input id="locName" maxlength="100" required value="${esc(loc?.name||'')}"></label><label class="field">Dirección<input id="locAddress" maxlength="200" value="${esc(loc?.address||'')}"></label><label class="field">Teléfono<input id="locPhone" maxlength="20" value="${esc(loc?.phone||'')}"></label><label class="field"><span><input id="locActive" type="checkbox" ${loc?.active===false?'':'checked'}> Activa</span></label>`,submit:async()=>{const payload={code:$('#locCode').value.trim().toUpperCase(),name:$('#locName').value.trim(),address:$('#locAddress').value.trim()||null,phone:$('#locPhone').value.trim()||null,active:$('#locActive').checked};if(payload.code.length<2||payload.name.length<2)throw new Error('Completa código y nombre.');const {error}=loc?await sb.from('store_locations').update(payload).eq('id',loc.id):await sb.from('store_locations').insert(payload);if(error)throw error;await reload();}});
+  }
+
   // =================================================================== acciones (delegación)
   const ACT = {
     reload: () => reload(),
+    rewardnew: () => openForm({title:'Nueva recompensa',ok:'Guardar',body:`<label class="field">Nombre<input id="rwTitle" required maxlength="80"></label><label class="field">Descripción<textarea id="rwDesc" maxlength="240"></textarea></label><label class="field">Puntos necesarios<input id="rwCost" type="number" min="1" step="1" required></label>`,submit:async()=>{const title=$('#rwTitle').value.trim(),points_cost=Number($('#rwCost').value);if(title.length<3||!Number.isInteger(points_cost)||points_cost<1)throw new Error('Completa nombre y puntos válidos.');const {error}=await sb.from('loyalty_rewards').insert({title,description:$('#rwDesc').value.trim(),points_cost});if(error)throw error;await reload();}}),
+    rewardtoggle: async el=>{const {data,error}=await sb.from('loyalty_rewards').select('*').eq('id',el.dataset.id).single();if(error)throw error;const r=await sb.from('loyalty_rewards').update({active:!data.active}).eq('id',data.id);if(r.error)throw r.error;await reload();},
+    customerredeem: async el=>{const c=await sb.from('customers').select('*').eq('id',el.dataset.id).single();if(c.error)throw c.error;const rewards=await q(sb.from('loyalty_rewards').select('*').eq('active',true).order('points_cost'));if(!rewards.length){toast('Primero crea una recompensa.','err');return;}openForm({title:'Canjear puntos · '+c.data.full_name,ok:'Canjear',body:`<p>Saldo: <b>${c.data.points_balance} puntos</b></p><label class="field">Recompensa<select id="rdReward">${rewards.map(r=>`<option value="${esc(r.id)}">${esc(r.title)} · ${r.points_cost} puntos</option>`).join('')}</select></label>`,submit:async()=>{const {data,error}=await sb.rpc('redeem_loyalty_reward',{p_phone:c.data.phone,p_reward:$('#rdReward').value});if(error)throw error;toast('Canje generado: '+data.code,'ok');}});},
+    campaignnew:()=>openForm({title:'Nueva campaña',ok:'Guardar borrador',wide:true,body:`<label class="field">Nombre<input id="mcName" maxlength="100" required></label><label class="field">Mensaje<textarea id="mcMessage" maxlength="700" required rows="5"></textarea></label><label class="field">Segmento<select id="mcSegment"><option value="consented">Solo clientes con consentimiento</option><option value="all">Todos los clientes (se filtrará por consentimiento al enviar)</option><option value="frequent">Frecuentes</option><option value="inactive">Inactivos</option><option value="birthday">Cumpleaños</option></select></label>`,submit:async()=>{const name=$('#mcName').value.trim(),message=$('#mcMessage').value.trim();if(name.length<3||message.length<10)throw new Error('Completa el nombre y un mensaje de al menos 10 caracteres.');const {error}=await sb.from('marketing_campaigns').insert({name,message,segment:$('#mcSegment').value,created_by:A.profile.id});if(error)throw error;await reload();}}),
+    campaigntoggle:async el=>{const {data,error}=await sb.from('marketing_campaigns').select('*').eq('id',el.dataset.id).single();if(error)throw error;const r=await sb.from('marketing_campaigns').update({status:data.status==='paused'?'ready':'paused'}).eq('id',data.id);if(r.error)throw r.error;await reload();},
+    campaignopen:async el=>{const {data:c,error}=await sb.from('marketing_campaigns').select('*').eq('id',el.dataset.id).single();if(error)throw error;let query=sb.from('customers').select('*').eq('marketing_consent',true);if(c.segment==='frequent')query=query.gte('lifetime_spend',200);if(c.segment==='inactive')query=query.lt('last_order_at',new Date(Date.now()-30*86400000).toISOString());if(c.segment==='birthday')query=query.not('birthday','is',null);const {data:people,error:e}=await query.limit(100);if(e)throw e;if(!people.length){toast('No hay clientes con consentimiento en ese segmento.','err');return;}openForm({title:'Destinatarios · '+c.name,ok:'Cerrar',body:`<p class="hint">${people.length} cliente(s). Abre cada chat manualmente; no se envían mensajes automáticos.</p><div class="list">${people.map(x=>`<div class="item"><div class="main"><b>${esc(x.full_name)}</b><small>${esc(x.phone)}</small></div><a class="btn ghost sm" target="_blank" rel="noopener" href="${esc(waUrl(x.phone,c.message))}">Abrir WhatsApp</a></div>`).join('')}</div>`,submit:async()=>{}});},
+    cashopen:()=>openForm({title:'Abrir caja',ok:'Abrir',body:`<label class="field">Fondo inicial (S/)<input id="cashOpening" type="number" min="0" step="0.01" value="0" required></label>`,submit:async()=>{const v=Number($('#cashOpening').value);if(!isFinite(v)||v<0)throw new Error('Monto inválido.');const {error}=await sb.from('cash_sessions').insert({opened_by:A.profile.id,opening_amount:v});if(error)throw error;await reload();}}),
+    cashmove:el=>openForm({title:'Movimiento de caja',ok:'Registrar',body:`<label class="field">Tipo<select id="cmKind"><option value="income">Ingreso</option><option value="expense">Egreso</option><option value="withdrawal">Retiro</option><option value="deposit">Depósito</option></select></label><label class="field">Monto (S/)<input id="cmAmount" type="number" min="0.01" step="0.01" required></label><label class="field">Descripción<input id="cmDesc" maxlength="160" required></label>`,submit:async()=>{const amount=Number($('#cmAmount').value),description=$('#cmDesc').value.trim();if(!isFinite(amount)||amount<=0||!description)throw new Error('Completa el monto y la descripción.');const {error}=await sb.from('cash_movements').insert({session_id:el.dataset.id,kind:$('#cmKind').value,amount,description,created_by:A.profile.id});if(error)throw error;await reload();}}),
+    cashclose:el=>openForm({title:'Cerrar caja',ok:'Cerrar caja',body:`<label class="field">Efectivo contado al cierre (S/)<input id="cashClosing" type="number" min="0" step="0.01" required></label><label class="field">Nota<input id="cashNote" maxlength="200"></label>`,submit:async()=>{const closing_amount=Number($('#cashClosing').value);if(!isFinite(closing_amount)||closing_amount<0)throw new Error('Monto inválido.');const {error}=await sb.from('cash_sessions').update({status:'closed',closed_by:A.profile.id,closed_at:new Date().toISOString(),closing_amount,note:$('#cashNote').value.trim()}).eq('id',el.dataset.id).eq('status','open');if(error)throw error;await reload();}}),
+    deliveryassign:async el=>{const order=A.d.orders.find(o=>o.id===el.dataset.id);const {data:old}=await sb.from('delivery_assignments').select('*').eq('order_id',order.id).maybeSingle();openForm({title:'Asignar repartidor · '+order.number,ok:'Guardar',body:`<label class="field">Nombre<input id="courierName" required maxlength="80" value="${esc(old?.courier_name||'')}"></label><label class="field">Celular<input id="courierPhone" maxlength="16" value="${esc(old?.courier_phone||'')}"></label><label class="field">Estado<select id="courierStatus"><option value="assigned">Asignado</option><option value="picked_up">Recogido</option><option value="on_the_way">En camino</option><option value="delivered">Entregado</option><option value="failed">Incidencia</option></select></label><label class="field">Notas<input id="courierNotes" maxlength="200" value="${esc(old?.notes||'')}"></label>`,submit:async()=>{const payload={order_id:order.id,courier_name:$('#courierName').value.trim(),courier_phone:$('#courierPhone').value.trim()||null,delivery_status:$('#courierStatus').value,assigned_by:A.profile.id,notes:$('#courierNotes').value.trim()||null};if(payload.courier_name.length<2)throw new Error('Escribe el nombre del repartidor.');const {error}=old?await sb.from('delivery_assignments').update(payload).eq('id',old.id):await sb.from('delivery_assignments').insert(payload);if(error)throw error;await reload();}});if(old)$('#courierStatus').value=old.delivery_status;},
+    locationnew:()=>locationForm(null),
+    locationedit:async el=>{const {data,error}=await sb.from('store_locations').select('*').eq('id',el.dataset.id).single();if(error)throw error;locationForm(data);},
     prodnew: () => productForm(null),
     prodedit: (el) => productForm(A.d.products.find((p) => p.id === el.dataset.id)),
     stockadj: (el) => stockForm(A.d.products.find((p) => p.id === el.dataset.id)),
@@ -770,6 +873,9 @@
       const c = (A.d.combos || []).find((x) => x.id === el.dataset.id);
       try { await submit('combo', 'update', c.id, { active: !c.active }, `${c.active ? 'Desactivar' : 'Activar'} combo "${c.name}"`); await reload(); } catch (e) { toast(errMsg(e), 'err'); }
     },
+    giftpromonew: () => giftPromoForm(null),
+    giftpromoedit: (el) => giftPromoForm((A.d.promotions||[]).find(x=>x.id===el.dataset.id)),
+    giftpromotoggle: async (el) => { const g=(A.d.promotions||[]).find(x=>x.id===el.dataset.id); try { const {error}=await sb.rpc('save_bayu_promotion',{p_id:g.id,p_payload:{...g,active:!g.active}}); if(error) throw error; toast(g.active?'Ticket pausado.':'Ticket activado.','ok'); await loadCore(); await reload(); } catch(e){toast(errMsg(e),'err');} },
     offernew: () => offerForm(null),
     offeredit: (el) => offerForm(A.d.products.find((p) => p.id === el.dataset.id)),
     offerclear: async (el) => {
