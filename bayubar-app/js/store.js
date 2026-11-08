@@ -552,9 +552,17 @@
   });
   $('#search').addEventListener('input', BB.debounce((e) => { S.query = e.target.value; renderGrid(); }, 120));
   const combosDialog = $('#combosPromoDialog');
-  $('#comboFeature')?.addEventListener('click', () => { if (combosDialog && !combosDialog.open) combosDialog.showModal(); });
+  $('#comboFeature')?.addEventListener('click', () => {
+    if (!combosDialog || combosDialog.open) return;
+    // Refresca ambos listados justo antes de abrir para mostrar el contenido vigente.
+    renderCombos();
+    renderOffers();
+    combosDialog.showModal();
+    document.documentElement.classList.add('bayu-modal-open');
+  });
   $('#combosModalClose')?.addEventListener('click', () => combosDialog?.close());
   combosDialog?.addEventListener('click', (event) => { if (event.target === combosDialog) combosDialog.close(); });
+  combosDialog?.addEventListener('close', () => document.documentElement.classList.remove('bayu-modal-open'));
 
   const pointsDialog = $('#pointsPromoDialog');
   $('#pointsFeature')?.addEventListener('click', () => { if (pointsDialog && !pointsDialog.open) pointsDialog.showModal(); });
