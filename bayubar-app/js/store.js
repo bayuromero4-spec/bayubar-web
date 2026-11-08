@@ -134,7 +134,7 @@
   }
   function filtered() {
     const q = norm(S.query.trim());
-    return S.products.filter((p) => (S.cat === 'Todo' || (S.cat === 'Ofertas' ? hasPromo(p) : p.category === S.cat)) && (!q || norm(p.name + ' ' + (p.size || '') + ' ' + p.category).includes(q)));
+    return S.products.filter((p) => (S.cat === 'Todo' || (S.cat === 'Ofertas' ? hasPromo(p) : p.category === S.cat)) && (!q || norm([p.name, p.size, p.category, p.description, p.brand].filter(Boolean).join(' ')).includes(q)));
   }
   function renderChips() {
     const cats = ['Todo', ...categories()];
@@ -368,8 +368,8 @@
     const n = cartCount(); const sub = cartSub();
     renderPromoTicket();
     $('#cartCount').textContent = n;
-    $('#dockCount').textContent = n; $('#dockTotal').textContent = money(sub);
-    $('#dock').hidden = n === 0 || $('#cartDlg').open;
+    $('#dockCount').textContent = n; $('#dockTotal').textContent = money(sub);\n    $('#dockBtn').setAttribute('aria-label', n ? `Ver mi pedido, ${n} productos, ${money(sub)}` : 'Abrir mi pedido vacío');
+    $('#dock').hidden = $('#cartDlg').open;
     const giftButton = $('#giftFloatButton');
     if (giftButton) {
       // Prioridad visual al CTA del pedido: el acceso al regalo vuelve al vaciar el carrito.
