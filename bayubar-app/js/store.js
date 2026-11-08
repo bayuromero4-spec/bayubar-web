@@ -400,12 +400,42 @@
     if ($('#fTicket')) $('#fTicket').value = '';
   }
 
+  // ------------------------------------------------------------ ficha rápida de producto
+  const productDlg = document.createElement('dialog');
+  productDlg.className = 'product-dialog';
+  productDlg.id = 'productDlg';
+  productDlg.innerHTML = '<div class="product-modal-shell"><button class="product-modal-close" type="button" aria-label="Cerrar">×</button><div class="product-modal-content"></div></div>';
+  document.body.appendChild(productDlg);
+  function openProduct(product) {
+    if (!product) return;
+    const promo = hasPromo(product);
+    const price = promo ? money(product.promo_price) : money(product.price);
+    const max = maxQty(product);
+    const q = S.cart[product.id] || 0;
+    const description = String(product.description || '').trim() || 'Una opción de BAYU BAR para disfrutar y compartir. Consulta disponibilidad y detalles por WhatsApp.';
+    $('.product-modal-content', productDlg).innerHTML = `
+      <div class="product-modal-image">${art(product, false)}</div>
+      <div class="product-modal-info">
+        <span class="product-modal-category">${esc(product.category || 'BAYU BAR')}</span>
+        <h2>${esc(product.name)}</h2>
+        ${product.size ? `<p class="product-modal-size">${esc(product.size)}</p>` : ''}
+        <p class="product-modal-description">${esc(description)}</p>
+        <div class="product-modal-bottom"><div><strong>${price}</strong>${promo ? `<s>${money(product.price)}</s>` : ''}</div><span class="product-modal-stock ${max < 1 ? 'is-out' : ''}">${max < 1 ? 'Agotado' : 'Disponible'}</span></div>
+        <div class="product-modal-action">${actionsHtml(product.id, product.name, max, q)}</div>
+      </div>`;
+    if (!productDlg.open) productDlg.showModal();
+  }
+  productDlg.addEventListener('click', (e) => { if (e.target === productDlg || e.target.closest('.product-modal-close')) productDlg.close(); });
+  productDlg.addEventListener('close', () => { $('.product-modal-content', productDlg).innerHTML = ''; });
+
   // ------------------------------------------------------------ eventos
   document.addEventListener('click', (e) => {
     const inc = e.target.closest('[data-inc]'); const dec = e.target.closest('[data-dec]'); const cat = e.target.closest('[data-cat]');
-    if (inc && !inc.disabled) { const k = inc.dataset.inc; setQty(k, (S.cart[k] || 0) + 1); }
-    else if (dec) { const k = dec.dataset.dec; setQty(k, (S.cart[k] || 0) - 1); }
+    const productCard = e.target.closest('#grid [data-card]');
+    if (inc && !inc.disabled) { const k = inc.dataset.inc; setQty(k, (S.cart[k] || 0) + 1); if (productDlg.open) { const p = S.products.find((x) => String(x.id) === String(k)); if (p) openProduct(p); } }
+    else if (dec) { const k = dec.dataset.dec; setQty(k, (S.cart[k] || 0) - 1); if (productDlg.open) { const p = S.products.find((x) => String(x.id) === String(k)); if (p) openProduct(p); } }
     else if (cat) { S.cat = cat.dataset.cat; renderChips(); renderGrid(); }
+    else if (productCard) { const p = S.products.find((x) => String(x.id) === String(productCard.dataset.card)); if (p) openProduct(p); }
   });
   $('#search').addEventListener('input', BB.debounce((e) => { S.query = e.target.value; renderGrid(); }, 120));
   $('#cartOpen').addEventListener('click', openCart);
