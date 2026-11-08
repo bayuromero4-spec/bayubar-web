@@ -172,7 +172,7 @@
     const section = $('#dailyOffers');
     const grid = $('#offersGrid');
     if (!section || !grid) return;
-    const offers = S.products.filter((p) => hasPromo(p) && maxQty(p) > 0).slice(0, 4);
+    const offers = S.products.filter((p) => hasPromo(p) && maxQty(p) > 0);
     section.hidden = offers.length === 0;
     grid.innerHTML = offers.map(cardHtml).join('');
     bindImgFallback(grid);
