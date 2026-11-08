@@ -159,32 +159,11 @@
     }).join('');
   }
 
-  function renderHeroProducts() {
-    const host = $('#heroProductStack');
-    if (!host) return;
-    const picks = S.products
-      .filter((p) => p.available !== false && safeUrl(p.image_url))
-      .sort((a, b) => Number(hasPromo(b)) - Number(hasPromo(a)))
-      .slice(0, 3);
-    if (!picks.length) {
-      host.innerHTML = '<div class="hero-product-empty"><span>SELECCIÓN BAYU</span><strong>Bebidas para cada ocasión</strong><small>Descubre el catálogo</small></div>';
-      return;
-    }
-    const card = (p, cls) => '<article class="hero-product ' + cls + '">' +
-      '<span class="hero-product-kicker">BAYU SELECTION</span><img src="' + esc(safeUrl(p.image_url)) + '" alt="' + esc(p.name) + '" loading="eager" decoding="async">' +
-      '<div class="hero-product-caption"><b>' + esc(p.name) + '</b><small>' + money(hasPromo(p) ? p.promo_price : p.price) + '</small></div></article>';
-    host.innerHTML = picks.length >= 3
-      ? card(picks[0], 'hero-product-side hero-product-left') + card(picks[1], 'hero-product-main') + card(picks[2], 'hero-product-side hero-product-right')
-      : picks.length === 2
-        ? card(picks[0], 'hero-product-side hero-product-left') + card(picks[1], 'hero-product-main')
-        : card(picks[0], 'hero-product-main');
-  }
-
   function renderOffers() {
     const section = $('#dailyOffers');
     const grid = $('#offersGrid');
     if (!section || !grid) return;
-    const offers = S.products.filter((p) => hasPromo(p)).slice(0, 4);
+    const offers = S.products.filter((p) => hasPromo(p) && maxQty(p) > 0).slice(0, 4);
     section.hidden = offers.length === 0;
     grid.innerHTML = offers.map(cardHtml).join('');
     bindImgFallback(grid);
@@ -259,7 +238,8 @@
 
   function renderCombos() {
     const sec = $('#combos'); const has = S.combos.length > 0;
-    sec.hidden = !has; $('#navCombos').hidden = !has;
+    sec.hidden = !has; $('#comboFeature').hidden = !has;
+    $('#navCombos').hidden = !has && !S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
     $('#comboGrid').innerHTML = has ? S.combos.map(comboHtml).join('') : '';
     bindImgFallback($('#comboGrid'));
   }
@@ -412,7 +392,7 @@
       $('#doneWa').href = waLink(text);
       step('done');
       renderBar(false);
-      load().then(() => { renderChips(); renderGrid(); renderCombos(); renderHomeCategories(); renderHeroProducts(); renderOffers(); }).catch(() => {});   // refresca el stock
+      load().then(() => { renderChips(); renderGrid(); renderCombos(); renderHomeCategories(); renderOffers(); }).catch(() => {});   // refresca el stock
     } catch (e) {
       showFormError(errMsg(e));
       load().then(() => { renderChips(); renderGrid(); renderCombos(); renderSummary(); }).catch(() => {});
@@ -517,7 +497,7 @@
     skeletons(); renderSettings(); renderBar(false);
     try {
       await load();
-      renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderHeroProducts(); renderOffers(); renderBar(false);
+      renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBar(false);
     } catch (e) {
       $('#grid').innerHTML = ''; $('#grid').setAttribute('aria-busy', 'false');
       $('#gridMsg').innerHTML = `<div class="msg"><h3 class="dis">No pudimos cargar el catálogo</h3><p>${esc(errMsg(e))}</p><button class="btn" id="retry" type="button">Reintentar</button></div>`;
