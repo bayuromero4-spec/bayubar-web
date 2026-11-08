@@ -497,3 +497,15 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
   padding:0!important;
   margin:0!important;
 }
+
+
+/* CATÁLOGO Y COMBOS · mismo formato de imagen */
+#grid .card .art,#comboGrid .card .art{
+  position:relative!important;display:block!important;width:100%!important;height:auto!important;
+  aspect-ratio:1.45 / 1!important;padding:0!important;overflow:hidden!important;background:#080d18!important;
+}
+#grid .card .art>img.ph,#comboGrid .card .art>img.ph{
+  position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;
+  max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center center!important;
+  padding:0!important;margin:0!important;
+}
