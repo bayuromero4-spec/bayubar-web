@@ -282,3 +282,55 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
 .loyalty-visual{min-width:180px;min-height:180px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.25);background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.22),rgba(34,195,238,.14) 40%,rgba(224,16,106,.12));box-shadow:inset 0 2px rgba(255,255,255,.2),0 0 48px rgba(34,195,238,.18);backdrop-filter:blur(18px)}
 .loyalty-visual span,.loyalty-visual small{font-size:10px;font-weight:800;letter-spacing:.2em;color:#9eefff}.loyalty-visual b{font-size:36px;color:#fff}.loyalty-visual small{color:#c4cfdf}
 @media(max-width:650px){.loyalty-glass{flex-direction:column;align-items:stretch;border-radius:22px}.loyalty-visual{min-width:140px;min-height:140px;width:140px;align-self:center}.loyalty-visual b{font-size:30px}}
+
+
+/* BAYU BAR · tarjeta regalo destacada y responsive */
+.bayu-ticket{display:block;width:calc(100% - 32px);max-width:1180px;min-width:0;margin:30px auto;padding:0;overflow:hidden;border:0;border-radius:28px;background:transparent;box-shadow:0 20px 65px rgba(0,0,0,.38)}
+.gift-card{position:relative;isolation:isolate;overflow:hidden;border:1px solid transparent;border-radius:28px;background:linear-gradient(125deg,#071725 0%,#0a1020 52%,#1b0a20 100%) padding-box,linear-gradient(110deg,#05d9f5,#3984ff 42%,#f00083) border-box;box-shadow:0 0 26px rgba(0,194,230,.13),0 0 38px rgba(224,16,106,.12),inset 0 1px rgba(255,255,255,.12)}
+.gift-card:before{content:"";position:absolute;z-index:-1;width:280px;height:280px;right:5%;top:12%;border-radius:50%;background:rgba(224,16,106,.18);filter:blur(65px)}
+.gift-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 26px;border-bottom:1px dashed rgba(255,255,255,.22);background:linear-gradient(90deg,rgba(0,194,230,.09),rgba(224,16,106,.12))}
+.gift-brand{font-size:clamp(15px,2vw,21px);font-weight:900;letter-spacing:.22em;color:#f5f8ff}
+.gift-ribbon{display:inline-flex;align-items:center;gap:9px;padding:9px 20px;border-radius:0 0 15px 15px;background:linear-gradient(110deg,#d90069,#ff1688);box-shadow:0 7px 25px rgba(224,16,106,.35);font-size:14px;font-weight:900;letter-spacing:.18em;color:white}
+.gift-ribbon span{font-size:20px}
+.gift-card-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,30%);align-items:center;gap:20px;padding:26px 30px 18px}
+.gift-card-copy{min-width:0}.gift-card-copy .overline{font-size:12px;letter-spacing:.2em}
+.gift-card-copy h2{max-width:700px;margin:8px 0 7px;font-size:clamp(25px,4vw,42px);line-height:1.12;overflow-wrap:anywhere}
+.gift-subtitle{color:#b8c4d8;font-size:clamp(15px,2vw,19px);line-height:1.45}
+.ticket-gift{display:flex;align-items:center;gap:12px;width:fit-content;max-width:100%;margin:18px 0 0;padding:9px 17px 9px 9px;border:1px solid rgba(0,207,239,.7);border-radius:18px;background:rgba(7,20,36,.82);box-shadow:0 0 20px rgba(0,194,230,.09);font-size:clamp(15px,2vw,20px)}
+.ticket-gift img{flex:0 0 56px;width:56px;height:56px;object-fit:contain;border-radius:13px;background:rgba(255,255,255,.08);padding:4px}
+.ticket-gift b{overflow-wrap:anywhere}.ticket-gift span{white-space:nowrap;color:#8deeff;font-weight:800}
+.gift-visual{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:205px;overflow:hidden}
+.gift-box{position:relative;width:135px;height:108px;margin-top:25px;border:2px solid #ff69b7;border-radius:12px 12px 18px 18px;background:linear-gradient(145deg,#252336,#090c17 70%);box-shadow:0 12px 32px rgba(224,16,106,.38),inset 0 0 20px rgba(255,42,133,.16);transform:rotate(-7deg)}
+.gift-box:before{content:"";position:absolute;left:53px;top:-12px;width:24px;height:116px;background:linear-gradient(90deg,#ed0878,#ff8ac8,#d90069);box-shadow:0 0 18px rgba(255,42,133,.6)}
+.gift-box:after{content:"";position:absolute;left:-9px;right:-9px;top:-13px;height:22px;border:2px solid #ff6eb7;border-radius:8px;background:linear-gradient(90deg,#ff1688,#ff8ac8,#e00070);box-shadow:0 0 18px rgba(255,42,133,.5)}
+.gift-box i,.gift-box b{position:absolute;z-index:2;top:-52px;width:48px;height:44px;border:9px solid #ff45a3;border-radius:80% 80% 15% 80%;filter:drop-shadow(0 0 8px rgba(255,42,133,.65))}
+.gift-box i{left:28px;transform:rotate(28deg)}.gift-box b{right:24px;transform:scaleX(-1) rotate(28deg)}
+.gift-box span{position:absolute;z-index:3;left:58px;top:-17px;width:20px;height:18px;border-radius:50%;background:#ff8ac8}
+.gift-visual small{margin-top:15px;text-align:center;font-size:9px;line-height:1.5;letter-spacing:.25em;font-weight:900;color:#a9efff}
+.gift-spark{position:absolute;color:#ffbd37;font-size:28px;text-shadow:0 0 12px currentColor}.spark-one{top:20px;right:20px}.spark-two{bottom:30px;left:8px;color:#ff1688}
+.gift-progress-wrap{margin:0 30px 26px;padding:15px 18px;border:1px solid rgba(224,16,106,.65);border-radius:18px;background:linear-gradient(100deg,rgba(105,0,57,.3),rgba(7,18,34,.88));}
+.gift-progress-text{margin-bottom:10px;color:#eaf5ff;font-size:clamp(14px,2vw,18px);font-weight:700;line-height:1.4}.gift-progress-text strong{color:#ffd52e;font-size:1.08em}
+.gift-progress-track{height:7px;overflow:hidden;border-radius:99px;background:rgba(255,255,255,.13)}.gift-progress-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#00d9f5,#8b74ff,#ff1688);box-shadow:0 0 15px rgba(0,217,245,.5);transition:width .35s ease}
+.gift-progress-wrap>small{display:block;margin-top:7px;text-align:right;color:#aab8cb;font-size:11px;font-variant-numeric:tabular-nums}
+@media(max-width:600px){
+ .bayu-ticket{width:calc(100% - 28px);margin:22px auto}
+ .gift-card{border-radius:22px}
+ .gift-card-head{padding:12px 16px}
+ .gift-ribbon{padding:8px 13px;font-size:12px}
+ .gift-card-body{grid-template-columns:minmax(0,1fr);gap:4px;padding:19px 17px 8px}
+ .gift-card-copy h2{font-size:clamp(24px,7vw,32px);line-height:1.12}
+ .gift-card-copy .overline{font-size:10px}
+ .gift-subtitle{font-size:15px}
+ .ticket-gift{margin-top:14px;gap:9px;padding:7px 12px 7px 7px;font-size:15px}
+ .ticket-gift img{width:48px;height:48px;flex-basis:48px}
+ .gift-visual{min-height:145px;margin-top:0}
+ .gift-box{width:105px;height:82px;margin-top:30px;transform:scale(.88) rotate(-7deg)}
+ .gift-box:before{left:40px;width:22px;height:90px}
+ .gift-box:after{height:19px}
+ .gift-box i{left:17px}.gift-box b{right:13px}
+ .gift-box span{left:43px}
+ .gift-spark{font-size:22px}
+ .gift-progress-wrap{margin:4px 14px 15px;padding:13px 14px;border-radius:15px}
+ .gift-progress-text{font-size:14px}
+}
+@media(min-width:601px) and (max-width:850px){.gift-card-body{grid-template-columns:minmax(0,1fr) 190px;padding:22px}.gift-visual{min-height:180px}}
