@@ -370,11 +370,13 @@
     $('#cartCount').textContent = n;
     $('#dockCount').textContent = n; $('#dockTotal').textContent = money(sub);
     $('#dockBtn').setAttribute('aria-label', n ? `Ver mi pedido, ${n} productos, ${money(sub)}` : 'Abrir mi pedido vacío');
-    $('#dock').hidden = $('#cartDlg').open;
+    const cartDialogOpen = $('#cartDlg').open;
+    // El CTA de pedido aparece solo cuando hay productos en el carrito.
+    $('#dock').hidden = n === 0 || cartDialogOpen;
     const giftButton = $('#giftFloatButton');
     if (giftButton) {
-      // Prioridad visual al CTA del pedido: el acceso al regalo vuelve al vaciar el carrito.
-      giftButton.hidden = n > 0 || $('#cartDlg').open;
+      // El acceso al regalo aparece únicamente cuando el CTA de pedido está oculto.
+      giftButton.hidden = n > 0 || cartDialogOpen;
       giftButton.setAttribute('aria-hidden', giftButton.hidden ? 'true' : 'false');
     }
     if (bump) { [$('#cartCount'), $('#dockCount')].forEach((el) => { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }); }
