@@ -1136,3 +1136,25 @@ body{background:radial-gradient(ellipse at 8% 28%,rgba(0,205,235,.105),transpare
   .gift-float-button[hidden]{display:none!important}
   .footer-in{padding-bottom:145px}
 }
+
+
+/* BAYU BAR · regalo flotante en esquina inferior izquierda */
+.gift-float-button{
+  left:24px;
+  right:auto;
+  bottom:24px;
+}
+@media(max-width:760px){
+  .gift-float-button{
+    left:12px;
+    right:auto;
+    bottom:184px;
+    min-height:54px;
+    max-width:calc(100vw - 24px);
+    padding:5px 11px 5px 6px;
+    gap:8px;
+  }
+  .gift-float-button img{width:38px;height:38px}
+  .gift-float-button b{font-size:12px}
+  .gift-float-button small{font-size:10px}
+}
