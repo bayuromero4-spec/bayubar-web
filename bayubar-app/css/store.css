@@ -1228,3 +1228,104 @@ main{overflow:clip}.wrap{max-width:1320px}
 .footer-in{padding-bottom:calc(130px + env(safe-area-inset-bottom))}
 }
 @media(max-width:380px){.hero-quick{grid-template-columns:1fr}.hero-quick-card{flex-direction:row;align-items:center;min-height:48px}.home-category-card{flex-basis:72%}.catalog .grid,.combos .grid,.combo-grid{grid-template-columns:1fr!important}.gift-float-button{max-width:165px}}
+
+
+/* BAYU BAR · corrección específica del bloque Puntos en móvil */
+@media(max-width:650px){
+  .loyalty-glass{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    justify-content:flex-start;
+    width:100%;
+    gap:18px;
+    padding:20px 17px 22px;
+    overflow:hidden;
+  }
+  .loyalty-copy{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    width:100%;
+    max-width:none;
+    min-width:0;
+    gap:10px;
+  }
+  .loyalty-copy .overline{
+    max-width:100%;
+    font-size:11px;
+    line-height:1.35;
+    letter-spacing:.16em;
+    overflow-wrap:anywhere;
+  }
+  .loyalty-copy h2{
+    width:100%;
+    max-width:100%;
+    margin:0;
+    font-size:clamp(29px,8vw,36px);
+    line-height:1.08;
+    overflow-wrap:normal;
+    word-break:normal;
+  }
+  .loyalty-copy p:not(.overline){
+    width:100%;
+    margin:0;
+    font-size:14px;
+    line-height:1.55;
+  }
+  .loyalty-copy .btn{
+    align-self:flex-start;
+    width:auto;
+    max-width:100%;
+    min-height:48px;
+    padding:0 18px;
+    white-space:normal;
+    text-align:center;
+  }
+  .loyalty-copy small{
+    display:block;
+    width:100%;
+    margin:0;
+    font-size:12px;
+    line-height:1.5;
+  }
+  .loyalty-visual{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    max-width:230px;
+    min-width:0;
+    min-height:0;
+    margin:0 auto;
+    padding:4px 0 0;
+    gap:5px;
+    overflow:visible;
+  }
+  .loyalty-visual img{
+    display:block;
+    width:min(68vw,205px);
+    max-width:100%;
+    height:auto;
+    max-height:none;
+    aspect-ratio:1;
+    object-fit:contain;
+    margin:0 auto;
+  }
+  .loyalty-visual span{font-size:10px;letter-spacing:.16em}
+  .loyalty-visual b{font-size:30px;line-height:1.05}
+  .loyalty-visual small{font-size:10px;letter-spacing:.14em}
+  .gift-float-button{
+    left:12px;
+    right:12px;
+    bottom:calc(82px + env(safe-area-inset-bottom));
+    width:max-content;
+    max-width:calc(100vw - 24px);
+    min-height:46px;
+    padding:4px 10px 4px 5px;
+    gap:7px;
+    z-index:55;
+  }
+  .gift-float-button img{width:32px;height:32px}
+}
