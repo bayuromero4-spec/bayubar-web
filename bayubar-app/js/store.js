@@ -145,26 +145,39 @@
     }).join('');
   }
 
-  function categoryImage(category) {
-    const c = norm(category);
-    if (/cerveza/.test(c)) return 'https://images.unsplash.com/photo-1671118720259-026c46d4a67c?auto=format&fit=crop&w=700&q=82';
-    if (/whisky|whiskey|ron/.test(c)) return 'https://images.unsplash.com/photo-1518704558972-aed9f85b393a?auto=format&fit=crop&w=700&q=82';
-    if (/pisco|vodka/.test(c)) return 'https://www.tourinperu.com/wp-content/uploads/2021/07/varieties-of-pisco.webp';
-    if (/vino|espum/.test(c)) return 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=82';
-    if (/coctel|cocktail/.test(c)) return 'https://images.unsplash.com/photo-1636144924623-b3aea3c5f16c?auto=format&fit=crop&w=700&q=82';
-    return 'https://images.unsplash.com/photo-1518704558972-aed9f85b393a?auto=format&fit=crop&w=700&q=82';
-  }
-
   function renderHomeCategories() {
     const grid = $('#homeCategoryGrid');
     if (!grid) return;
     const cats = Array.from(new Set(S.products.map((p) => p.category).filter(Boolean)));
     grid.innerHTML = cats.slice(0, 6).map((category) => {
-      const count = S.products.filter((p) => p.category === category).length;
-      const image = categoryImage(category);
-      return '<button class="home-category-card" type="button" data-home-cat="' + esc(category) + '" style="--cat-image:url(&quot;' + esc(image) + '&quot;)">' +
-        '<span class="home-category-copy"><strong>' + esc(category) + '</strong><small>' + count + ' productos</small></span><span class="home-category-arrow" aria-hidden="true">↗</span></button>';
+      const items = S.products.filter((p) => p.category === category);
+      const featured = items.find((p) => safeUrl(p.image_url));
+      const image = featured ? safeUrl(featured.image_url) : '';
+      const style = image ? ' style="--cat-image:url(&quot;' + esc(image) + '&quot;)"' : '';
+      return '<button class="home-category-card" type="button" data-home-cat="' + esc(category) + '"' + style + '>' +
+        '<span class="home-category-copy"><strong>' + esc(category) + '</strong><small>' + items.length + ' productos</small></span><span class="home-category-arrow" aria-hidden="true">↗</span></button>';
     }).join('');
+  }
+
+  function renderHeroProducts() {
+    const host = $('#heroProductStack');
+    if (!host) return;
+    const picks = S.products
+      .filter((p) => p.available !== false && safeUrl(p.image_url))
+      .sort((a, b) => Number(hasPromo(b)) - Number(hasPromo(a)))
+      .slice(0, 3);
+    if (!picks.length) {
+      host.innerHTML = '<div class="hero-product-empty"><span>SELECCIÓN BAYU</span><strong>Bebidas para cada ocasión</strong><small>Descubre el catálogo</small></div>';
+      return;
+    }
+    const card = (p, cls) => '<article class="hero-product ' + cls + '">' +
+      '<span class="hero-product-kicker">BAYU SELECTION</span><img src="' + esc(safeUrl(p.image_url)) + '" alt="' + esc(p.name) + '" loading="eager" decoding="async">' +
+      '<div class="hero-product-caption"><b>' + esc(p.name) + '</b><small>' + money(hasPromo(p) ? p.promo_price : p.price) + '</small></div></article>';
+    host.innerHTML = picks.length >= 3
+      ? card(picks[0], 'hero-product-side hero-product-left') + card(picks[1], 'hero-product-main') + card(picks[2], 'hero-product-side hero-product-right')
+      : picks.length === 2
+        ? card(picks[0], 'hero-product-side hero-product-left') + card(picks[1], 'hero-product-main')
+        : card(picks[0], 'hero-product-main');
   }
 
   function renderOffers() {
@@ -399,7 +412,7 @@
       $('#doneWa').href = waLink(text);
       step('done');
       renderBar(false);
-      load().then(() => { renderChips(); renderGrid(); renderCombos(); renderHomeCategories(); renderOffers(); }).catch(() => {});   // refresca el stock
+      load().then(() => { renderChips(); renderGrid(); renderCombos(); renderHomeCategories(); renderHeroProducts(); renderOffers(); }).catch(() => {});   // refresca el stock
     } catch (e) {
       showFormError(errMsg(e));
       load().then(() => { renderChips(); renderGrid(); renderCombos(); renderSummary(); }).catch(() => {});
@@ -504,7 +517,7 @@
     skeletons(); renderSettings(); renderBar(false);
     try {
       await load();
-      renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBar(false);
+      renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderHeroProducts(); renderOffers(); renderBar(false);
     } catch (e) {
       $('#grid').innerHTML = ''; $('#grid').setAttribute('aria-busy', 'false');
       $('#gridMsg').innerHTML = `<div class="msg"><h3 class="dis">No pudimos cargar el catálogo</h3><p>${esc(errMsg(e))}</p><button class="btn" id="retry" type="button">Reintentar</button></div>`;
