@@ -144,6 +144,39 @@
       return `<button class="chip" type="button" data-cat="${esc(c)}" aria-pressed="${c === S.cat}">${esc(c)} <small>${n}</small></button>`;
     }).join('');
   }
+
+  function categoryImage(category) {
+    const c = norm(category);
+    if (/cerveza/.test(c)) return 'https://images.unsplash.com/photo-1671118720259-026c46d4a67c?auto=format&fit=crop&w=700&q=82';
+    if (/whisky|whiskey|ron/.test(c)) return 'https://images.unsplash.com/photo-1518704558972-aed9f85b393a?auto=format&fit=crop&w=700&q=82';
+    if (/pisco|vodka/.test(c)) return 'https://www.tourinperu.com/wp-content/uploads/2021/07/varieties-of-pisco.webp';
+    if (/vino|espum/.test(c)) return 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=82';
+    if (/coctel|cocktail/.test(c)) return 'https://images.unsplash.com/photo-1636144924623-b3aea3c5f16c?auto=format&fit=crop&w=700&q=82';
+    return 'https://images.unsplash.com/photo-1518704558972-aed9f85b393a?auto=format&fit=crop&w=700&q=82';
+  }
+
+  function renderHomeCategories() {
+    const grid = $('#homeCategoryGrid');
+    if (!grid) return;
+    const cats = Array.from(new Set(S.products.map((p) => p.category).filter(Boolean)));
+    grid.innerHTML = cats.slice(0, 6).map((category) => {
+      const count = S.products.filter((p) => p.category === category).length;
+      const image = categoryImage(category);
+      return '<button class="home-category-card" type="button" data-home-cat="' + esc(category) + '" style="--cat-image:url(&quot;' + esc(image) + '&quot;)">' +
+        '<span class="home-category-copy"><strong>' + esc(category) + '</strong><small>' + count + ' productos</small></span><span class="home-category-arrow" aria-hidden="true">↗</span></button>';
+    }).join('');
+  }
+
+  function renderOffers() {
+    const section = $('#dailyOffers');
+    const grid = $('#offersGrid');
+    if (!section || !grid) return;
+    const offers = S.products.filter((p) => hasPromo(p)).slice(0, 4);
+    section.hidden = offers.length === 0;
+    grid.innerHTML = offers.map(cardHtml).join('');
+    bindImgFallback(grid);
+  }
+
   function actionsHtml(key, name, max, q) {
     if (max < 1) return `<button class="add" type="button" disabled>Agotado</button>`;
     if (q > 0) return `<div class="stepper"><button type="button" data-dec="${esc(key)}" aria-label="Quitar uno de ${esc(name)}">−</button><b class="num">${q}</b><button type="button" data-inc="${esc(key)}" aria-label="Agregar uno más de ${esc(name)}" ${q >= max ? 'disabled' : ''}>+</button></div>`;
@@ -240,14 +273,17 @@
   }
   // Actualiza solo los controles de una tarjeta (evita recargar fotos y repetir animaciones).
   function refreshCard(key) {
-    const x = lookup(key); const card = $(`[data-card="${CSS.escape(key)}"]`);
-    if (!x.item || !card) return;
+    const x = lookup(key);
+    const cards = $$('[data-card="' + CSS.escape(key) + '"]');
+    if (!x.item || !cards.length) return;
     const q = S.cart[key] || 0;
-    card.classList.toggle('in', q > 0);
-    $('.act', card).innerHTML = actionsHtml(key, x.item.name, maxFor(key), q);
-    const a = $('.art', card); let badge = $('.qty', a);
-    if (q > 0) { if (!badge) { badge = document.createElement('span'); badge.className = 'qty num'; a.prepend(badge); } badge.textContent = q; }
-    else if (badge) badge.remove();
+    cards.forEach((card) => {
+      card.classList.toggle('in', q > 0);
+      $('.act', card).innerHTML = actionsHtml(key, x.item.name, maxFor(key), q);
+      const a = $('.art', card); let badge = $('.qty', a);
+      if (q > 0) { if (!badge) { badge = document.createElement('span'); badge.className = 'qty num'; a.prepend(badge); } badge.textContent = q; }
+      else if (badge) badge.remove();
+    });
   }
 
   // ------------------------------------------------------------ carrito
@@ -363,7 +399,7 @@
       $('#doneWa').href = waLink(text);
       step('done');
       renderBar(false);
-      load().then(() => { renderChips(); renderGrid(); renderCombos(); }).catch(() => {});   // refresca el stock
+      load().then(() => { renderChips(); renderGrid(); renderCombos(); renderHomeCategories(); renderOffers(); }).catch(() => {});   // refresca el stock
     } catch (e) {
       showFormError(errMsg(e));
       load().then(() => { renderChips(); renderGrid(); renderCombos(); renderSummary(); }).catch(() => {});
@@ -431,7 +467,7 @@
   // ------------------------------------------------------------ eventos
   document.addEventListener('click', (e) => {
     const inc = e.target.closest('[data-inc]'); const dec = e.target.closest('[data-dec]'); const cat = e.target.closest('[data-cat]');
-    const productCard = e.target.closest('#grid [data-card]');
+    const productCard = e.target.closest('#grid [data-card], #offersGrid [data-card]');
     if (inc && !inc.disabled) { const k = inc.dataset.inc; setQty(k, (S.cart[k] || 0) + 1); if (productDlg.open) { const p = S.products.find((x) => String(x.id) === String(k)); if (p) openProduct(p); } }
     else if (dec) { const k = dec.dataset.dec; setQty(k, (S.cart[k] || 0) - 1); if (productDlg.open) { const p = S.products.find((x) => String(x.id) === String(k)); if (p) openProduct(p); } }
     else if (cat) { S.cat = cat.dataset.cat; renderChips(); renderGrid(); }
@@ -466,7 +502,7 @@
     skeletons(); renderSettings(); renderBar(false);
     try {
       await load();
-      renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderBar(false);
+      renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBar(false);
     } catch (e) {
       $('#grid').innerHTML = ''; $('#grid').setAttribute('aria-busy', 'false');
       $('#gridMsg').innerHTML = `<div class="msg"><h3 class="dis">No pudimos cargar el catálogo</h3><p>${esc(errMsg(e))}</p><button class="btn" id="retry" type="button">Reintentar</button></div>`;
