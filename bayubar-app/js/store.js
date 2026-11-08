@@ -368,7 +368,8 @@
     const n = cartCount(); const sub = cartSub();
     renderPromoTicket();
     $('#cartCount').textContent = n;
-    $('#dockCount').textContent = n; $('#dockTotal').textContent = money(sub);\n    $('#dockBtn').setAttribute('aria-label', n ? `Ver mi pedido, ${n} productos, ${money(sub)}` : 'Abrir mi pedido vacío');
+    $('#dockCount').textContent = n; $('#dockTotal').textContent = money(sub);
+    $('#dockBtn').setAttribute('aria-label', n ? `Ver mi pedido, ${n} productos, ${money(sub)}` : 'Abrir mi pedido vacío');
     $('#dock').hidden = $('#cartDlg').open;
     const giftButton = $('#giftFloatButton');
     if (giftButton) {
