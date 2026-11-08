@@ -104,7 +104,7 @@
       <span class="feature-art combo-art" aria-hidden="true"><img src="./assets/combos-bayu.svg" alt=""></span>
       <span class="feature-link">Explorar combos →</span>
     </a>
-    <a class="home-feature-panel points-feature" href="#puntos" id="pointsFeature">
+    <button class="home-feature-panel points-feature" type="button" id="pointsFeature" aria-haspopup="dialog" aria-controls="pointsPromoDialog">
       <span class="feature-eyebrow">PROGRAMA DE FIDELIDAD</span>
       <span class="feature-title">Acumula<br><em>Puntos BAYU.</em></span>
       <span class="feature-description">Cada compra suma. Acumula puntos BAYU y canjéalos por beneficios.</span>
@@ -112,6 +112,27 @@
       <span class="feature-link">Conoce tus puntos →</span>
     </a>
   </section>
+
+
+  <dialog class="gift-promo-dialog points-promo-dialog" id="pointsPromoDialog" aria-labelledby="pointsPromoTitle">
+    <div class="gift-modal-shell points-modal-shell">
+      <button class="gift-modal-close" type="button" id="pointsModalClose" aria-label="Cerrar">×</button>
+      <div class="gift-modal-content points-modal-content">
+        <div class="gift-modal-topline"><span class="gift-modal-kicker">PROGRAMA DE FIDELIDAD</span><span class="gift-modal-pill">BAYU COIN</span></div>
+        <div class="points-modal-hero">
+          <div class="gift-modal-copy">
+            <p class="overline">CADA COMPRA SUMA</p>
+            <h2 id="pointsPromoTitle">Acumula Puntos BAYU</h2>
+            <p class="gift-modal-description">Convierte tus compras en beneficios. Por cada S/ 10 en productos acumulas 1 BAYU COIN.</p>
+          </div>
+          <div class="points-modal-image"><img src="./assets/bayu-coin.svg" alt="Monedas BAYU COIN"></div>
+        </div>
+        <div class="points-modal-rule"><strong>1 BAYU COIN</strong><b>S/ 10</b><small>EN PRODUCTOS</small></div>
+        <p class="points-modal-note">Tus monedas se acreditan cuando el pedido figura como entregado. Consulta tu saldo y solicita el canje de recompensas por WhatsApp; verificaremos tu número antes de procesarlo.</p>
+        <a class="btn points-modal-cta" id="loyaltyWhatsApp" href="#" target="_blank" rel="noopener">Consultar mis puntos <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </dialog>
 
   <section class="wrap combos" id="combos" hidden>
     <div class="sec-head">
@@ -135,34 +156,7 @@
     <div id="gridMsg"></div>
   </section>
 
-  <section class="wrap bayu-loyalty" id="puntos">
-    <details class="loyalty-card">
-      <summary class="loyalty-summary">
-        <span class="loyalty-summary-copy">
-          <span class="overline">PROGRAMA DE FIDELIDAD</span>
-          <strong>PUNTOS BAYU</strong>
-          <span>Acumula y canjea por recompensas</span>
-          <em>Ver cómo funciona <span aria-hidden="true">＋</span></em>
-        </span>
-        <img src="./assets/bayu-coin.svg" alt="" class="loyalty-summary-coin">
-      </summary>
-      <div class="loyalty-details">
-        <div class="loyalty-details-copy">
-          <p class="overline">ASÍ FUNCIONA BAYU COIN</p>
-          <h3>Compra, acumula y disfruta.</h3>
-          <p>Por cada S/ 10 de compra en productos acumulas 1 BAYU COIN. Las monedas se acreditan cuando tu pedido se marca como entregado.</p>
-          <p>Consulta tu saldo y solicita el canje de recompensas por WhatsApp. Verificaremos tu número antes de procesarlo.</p>
-          <a class="btn" id="loyaltyWhatsApp" href="#" target="_blank" rel="noopener">Consultar mis puntos</a>
-        </div>
-        <div class="loyalty-details-coin">
-          <img src="./assets/bayu-coin.svg" alt="Monedas BAYU COIN">
-          <strong>1 BAYU COIN</strong>
-          <b>S/ 10</b>
-          <small>EN PRODUCTOS</small>
-        </div>
-      </div>
-    </details>
-  </section>
+
 
   <section class="wrap" id="delivery">
     <div class="promo" id="promo">
