@@ -197,7 +197,18 @@
     const missing=Math.max(0,Number(promo.min_subtotal)-cartSub());
     const unlocked = missing <= 0;
     const giftImage = safeUrl(promo.gift_image);
-    el.innerHTML=`<div class="ticket-stub"><span class="ticket-kicker">BAYU BAR</span><span class="ticket-admit">REGALO</span></div><div class="ticket-copy"><p class="overline">PROMOCIÓN ESPECIAL BAYU</p><h2>${esc(promo.title)}</h2><p>${esc(promo.description||'Tu pedido tiene un regalo especial.')}</p><div class="ticket-gift">${giftImage?'<img src="'+esc(giftImage)+'" alt="" loading="lazy">':''} <b>${esc(promo.gift_name)}</b> × ${Number(promo.gift_qty)||1}</div><p class="ticket-progress">${unlocked?'¡Regalo desbloqueado! Se agregará automáticamente a tu pedido.':`Agrega ${money(missing)} más para recibir tu regalo.`}</p></div>`;
+    const threshold=Math.max(1,Number(promo.min_subtotal)||1);
+    const progress=Math.min(100,Math.max(0,(cartSub()/threshold)*100));
+    el.innerHTML=`<div class="gift-card">
+      <div class="gift-card-head"><span class="gift-brand">BAYU BAR</span><span class="gift-ribbon"><span aria-hidden="true">♔</span> REGALO</span></div>
+      <div class="gift-card-body">
+        <div class="gift-card-copy"><p class="overline">PROMOCIÓN ESPECIAL BAYU</p><h2>${esc(promo.title||'Tu compra viene con regalo')}</h2><p class="gift-subtitle">${esc(promo.description||'Llévate un snack por tu compra.')}</p>
+          <div class="ticket-gift">${giftImage?'<img src="'+esc(giftImage)+'" alt="" loading="lazy">':''}<b>${esc(promo.gift_name)}</b><span>× ${Number(promo.gift_qty)||1}</span></div>
+        </div>
+        <div class="gift-visual" aria-hidden="true"><span class="gift-spark spark-one">✦</span><span class="gift-spark spark-two">✦</span><div class="gift-box"><i></i><b></b><span></span></div><small>UN DETALLE<br>PARA TI</small></div>
+      </div>
+      <div class="gift-progress-wrap"><div class="gift-progress-text">${unlocked?'¡Felicidades! Tu regalo está desbloqueado.':`Agrega <strong>${money(missing)}</strong> más para recibir tu regalo.`}</div><div class="gift-progress-track"><span style="width:${progress.toFixed(1)}%"></span></div><small>${money(cartSub())} de ${money(threshold)}</small></div>
+    </div>`;
   }
 
   function renderCombos() {
