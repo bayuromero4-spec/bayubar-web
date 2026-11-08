@@ -1421,3 +1421,55 @@ main{overflow:clip}.wrap{max-width:1320px}
  .combos-modal-title{font-size:28px}
  .combos-modal-intro{font-size:13px}
 }
+
+
+/* BAYU BAR · hero fotográfico integrado, sin marco ni tarjeta independiente */
+.hero{
+  position:relative;
+  isolation:isolate;
+  background-image:
+    linear-gradient(90deg,rgba(3,7,15,.94) 0%,rgba(3,7,15,.82) 34%,rgba(3,7,15,.48) 66%,rgba(3,7,15,.30) 100%),
+    linear-gradient(0deg,rgba(3,7,15,.68),rgba(3,7,15,.08) 52%,rgba(3,7,15,.35)),
+    url("../assets/hero-bayu.webp");
+  background-size:cover;
+  background-position:center 48%;
+  border-bottom:1px solid rgba(0,220,245,.22);
+}
+.hero-in{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(260px,340px);
+  align-items:center;
+  gap:clamp(22px,4vw,54px);
+  min-height:clamp(440px,44vw,610px);
+  padding-top:clamp(42px,6vw,78px);
+  padding-bottom:clamp(42px,6vw,78px);
+}
+.hero-copy{max-width:760px;position:relative;z-index:1}
+.hero h1{max-width:900px;font-size:clamp(42px,6vw,82px);line-height:1.02;text-wrap:balance}
+.hero h1 .it{color:#ff168d}
+.hero .lead{max-width:620px;font-size:clamp(16px,1.55vw,21px);color:#e0e6f1}
+.hero-quick{position:relative;z-index:1}
+.hero-quick-card{background:rgba(6,12,24,.72);border-color:rgba(255,255,255,.2);backdrop-filter:blur(16px)}
+.hero-quick-card:nth-child(3) .hero-quick-icon{color:#ffc451}
+.hero:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 82% 48%,rgba(0,209,240,.12),transparent 36%),linear-gradient(0deg,rgba(4,7,14,.18),transparent 30%)}
+.dock{bottom:calc(64px + env(safe-area-inset-bottom))}
+.dockbtn{min-height:54px}
+@media(max-width:1000px){
+  .hero-in{grid-template-columns:minmax(0,1fr) 260px;min-height:490px;padding:40px 24px}
+  .hero h1{font-size:clamp(38px,6.5vw,60px)}
+}
+@media(max-width:650px){
+  .hero{width:calc(100% - 20px);margin:10px auto 0;border-radius:22px;overflow:hidden}
+  .hero-in{display:flex;flex-direction:column;align-items:stretch;gap:22px;min-height:0;padding:30px 18px 22px}
+  .hero-copy{gap:14px}
+  .hero h1{font-size:clamp(34px,9.2vw,48px);line-height:1.04;max-width:100%;letter-spacing:-.045em}
+  .hero .lead{font-size:15px;line-height:1.48;max-width:100%}
+  .hero-quick{display:grid;grid-template-columns:1fr;gap:8px}
+  .hero-quick-card{min-height:62px;flex-direction:row;align-items:center;padding:10px 12px}
+  .hero-quick-card b{font-size:12px}
+  .hero-quick-card small{font-size:11px}
+  .hero-quick-icon{width:34px;height:34px}
+  .dock{bottom:calc(70px + env(safe-area-inset-bottom));padding-bottom:5px}
+  .dockbtn{width:100%;min-height:52px;padding:6px 16px 6px 8px}
+  .dockcount{width:38px;height:38px}
+}
