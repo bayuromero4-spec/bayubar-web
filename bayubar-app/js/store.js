@@ -467,10 +467,12 @@
   // ------------------------------------------------------------ eventos
   document.addEventListener('click', (e) => {
     const inc = e.target.closest('[data-inc]'); const dec = e.target.closest('[data-dec]'); const cat = e.target.closest('[data-cat]');
+    const homeCat = e.target.closest('[data-home-cat]');
     const productCard = e.target.closest('#grid [data-card], #offersGrid [data-card]');
     if (inc && !inc.disabled) { const k = inc.dataset.inc; setQty(k, (S.cart[k] || 0) + 1); if (productDlg.open) { const p = S.products.find((x) => String(x.id) === String(k)); if (p) openProduct(p); } }
     else if (dec) { const k = dec.dataset.dec; setQty(k, (S.cart[k] || 0) - 1); if (productDlg.open) { const p = S.products.find((x) => String(x.id) === String(k)); if (p) openProduct(p); } }
     else if (cat) { S.cat = cat.dataset.cat; renderChips(); renderGrid(); }
+    else if (homeCat) { S.cat = homeCat.dataset.homeCat; renderChips(); renderGrid(); $('#catalogo').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     else if (productCard) { const p = S.products.find((x) => String(x.id) === String(productCard.dataset.card)); if (p) openProduct(p); }
   });
   $('#search').addEventListener('input', BB.debounce((e) => { S.query = e.target.value; renderGrid(); }, 120));
