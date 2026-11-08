@@ -173,7 +173,7 @@
     const grid = $('#offersGrid');
     if (!section || !grid) return;
     const offers = S.products.filter((p) => hasPromo(p));
-    section.hidden = offers.length === 0;
+    section.hidden = true; // Las ofertas se muestran únicamente dentro de la ventana Ofertas y Combos.
     grid.innerHTML = offers.map(cardHtml).join('');
     bindImgFallback(grid);
     const modalGrid = $('#modalOffersGrid');
