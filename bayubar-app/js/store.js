@@ -176,6 +176,14 @@
     section.hidden = offers.length === 0;
     grid.innerHTML = offers.map(cardHtml).join('');
     bindImgFallback(grid);
+    const modalGrid = $('#modalOffersGrid');
+    const modalSection = $('#modalOffersSection');
+    if (modalGrid && modalSection) {
+      modalGrid.innerHTML = offers.map(cardHtml).join('');
+      modalSection.hidden = offers.length === 0;
+      bindImgFallback(modalGrid);
+    }
+    updatePromosEmpty();
   }
 
   function actionsHtml(key, name, max, q) {
@@ -284,12 +292,28 @@
     });
   }
 
+  function updatePromosEmpty() {
+    const empty = $('#modalPromosEmpty');
+    if (empty) empty.hidden = S.combos.length > 0 || S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
+  }
   function renderCombos() {
     const sec = $('#combos'); const has = S.combos.length > 0;
-    sec.hidden = !has; $('#comboFeature').hidden = !has;
+    if (sec) sec.hidden = !has;
+    const feature = $('#comboFeature');
+    if (feature) feature.hidden = !has && !S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
     $('#navCombos').hidden = !has && !S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
-    $('#comboGrid').innerHTML = has ? S.combos.map(comboHtml).join('') : '';
-    bindImgFallback($('#comboGrid'));
+    const markup = has ? S.combos.map(comboHtml).join('') : '';
+    const mainGrid = $('#comboGrid');
+    if (mainGrid) mainGrid.innerHTML = markup;
+    bindImgFallback(mainGrid);
+    const modalGrid = $('#modalComboGrid');
+    const modalSection = $('#modalCombosSection');
+    if (modalGrid && modalSection) {
+      modalGrid.innerHTML = markup;
+      modalSection.hidden = !has;
+      bindImgFallback(modalGrid);
+    }
+    updatePromosEmpty();
   }
   function renderGrid() {
     const grid = $('#grid'); const msg = $('#gridMsg');
@@ -524,6 +548,11 @@
     else if (productCard) { const p = S.products.find((x) => String(x.id) === String(productCard.dataset.card)); if (p) openProduct(p); }
   });
   $('#search').addEventListener('input', BB.debounce((e) => { S.query = e.target.value; renderGrid(); }, 120));
+  const combosDialog = $('#combosPromoDialog');
+  $('#comboFeature')?.addEventListener('click', () => { if (combosDialog && !combosDialog.open) combosDialog.showModal(); });
+  $('#combosModalClose')?.addEventListener('click', () => combosDialog?.close());
+  combosDialog?.addEventListener('click', (event) => { if (event.target === combosDialog) combosDialog.close(); });
+
   const pointsDialog = $('#pointsPromoDialog');
   $('#pointsFeature')?.addEventListener('click', () => { if (pointsDialog && !pointsDialog.open) pointsDialog.showModal(); });
   $('#pointsModalClose')?.addEventListener('click', () => pointsDialog?.close());
