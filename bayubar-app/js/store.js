@@ -172,7 +172,7 @@
     const section = $('#dailyOffers');
     const grid = $('#offersGrid');
     if (!section || !grid) return;
-    const offers = S.products.filter((p) => hasPromo(p) && maxQty(p) > 0);
+    const offers = S.products.filter((p) => hasPromo(p));
     section.hidden = offers.length === 0;
     grid.innerHTML = offers.map(cardHtml).join('');
     bindImgFallback(grid);
@@ -294,14 +294,14 @@
 
   function updatePromosEmpty() {
     const empty = $('#modalPromosEmpty');
-    if (empty) empty.hidden = S.combos.length > 0 || S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
+    if (empty) empty.hidden = S.combos.length > 0 || S.products.some(hasPromo);
   }
   function renderCombos() {
     const sec = $('#combos'); const has = S.combos.length > 0;
     if (sec) sec.hidden = !has;
     const feature = $('#comboFeature');
-    if (feature) feature.hidden = !has && !S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
-    $('#navCombos').hidden = !has && !S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
+    if (feature) feature.hidden = !has && !S.products.some(hasPromo);
+    $('#navCombos').hidden = !has && !S.products.some(hasPromo);
     const markup = has ? S.combos.map(comboHtml).join('') : '';
     const mainGrid = $('#comboGrid');
     if (mainGrid) mainGrid.innerHTML = markup;
@@ -554,15 +554,29 @@
   const combosDialog = $('#combosPromoDialog');
   $('#comboFeature')?.addEventListener('click', () => {
     if (!combosDialog || combosDialog.open) return;
-    // Refresca ambos listados justo antes de abrir para mostrar el contenido vigente.
+    // Refresca combos y todos los productos marcados con precio promocional.
     renderCombos();
     renderOffers();
+    window.__bayuCombosScrollY = window.scrollY;
     combosDialog.showModal();
     document.documentElement.classList.add('bayu-modal-open');
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + window.__bayuCombosScrollY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
   });
   $('#combosModalClose')?.addEventListener('click', () => combosDialog?.close());
   combosDialog?.addEventListener('click', (event) => { if (event.target === combosDialog) combosDialog.close(); });
-  combosDialog?.addEventListener('close', () => document.documentElement.classList.remove('bayu-modal-open'));
+  combosDialog?.addEventListener('close', () => {
+    document.documentElement.classList.remove('bayu-modal-open');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, window.__bayuCombosScrollY || 0);
+  });
 
   const pointsDialog = $('#pointsPromoDialog');
   $('#pointsFeature')?.addEventListener('click', () => { if (pointsDialog && !pointsDialog.open) pointsDialog.showModal(); });
