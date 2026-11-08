@@ -1510,3 +1510,36 @@ main{overflow:clip}.wrap{max-width:1320px}
   #dock{bottom:calc(70px + env(safe-area-inset-bottom))!important}
   .gift-float-button{bottom:calc(82px + env(safe-area-inset-bottom))!important}
 }
+
+
+/* Ventana Ofertas y Combos: listado visible y scroll contenido en el modal */
+html.bayu-modal-open,html.bayu-modal-open body{overflow:hidden!important;overscroll-behavior:none}
+.combos-promo-dialog{
+  max-height:88dvh;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(0,217,242,.55) rgba(255,255,255,.06);
+}
+.combos-promo-dialog .gift-modal-shell{min-height:0}
+.combos-promo-dialog .gift-modal-content{display:grid;gap:16px}
+.combos-promo-dialog .combos-modal-section[hidden]{display:none!important}
+.combos-promo-dialog .combos-modal-section .card{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.combos-promo-dialog .combos-modal-section .card .art{height:clamp(112px,22vw,180px);flex:0 0 auto}
+.combos-promo-dialog .combos-modal-section .card .card-body{min-width:0;padding:11px;gap:8px}
+.combos-promo-dialog .combos-modal-section .card h3{font-size:clamp(13px,2vw,16px);overflow-wrap:anywhere}
+.combos-promo-dialog .combos-modal-section .card .price{font-size:clamp(16px,2.5vw,20px)}
+.combos-promo-dialog::backdrop{background:rgba(1,4,10,.82);backdrop-filter:blur(7px)}
+@media(max-width:600px){
+ .combos-promo-dialog{width:calc(100vw - 18px);max-height:86dvh;border-radius:22px}
+ .combos-promo-dialog .gift-modal-shell{padding:22px 13px}
+ .combos-promo-dialog .combos-modal-section .combo-grid,
+ .combos-promo-dialog .combos-modal-section .offers-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .combos-promo-dialog .combos-modal-section .card .art{height:118px}
+ .combos-promo-dialog .combos-modal-section .card .card-body{padding:9px}
+}
