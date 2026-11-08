@@ -3,7 +3,7 @@
   'use strict';
   const { esc, money, norm, store: ls, toast, errMsg, cfg } = BB;
   const $ = (s, r) => (r || document).querySelector(s);
-  const $ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 
   // Bloquea el inicio mientras cualquier ventana modal esté abierta.
   function showLockedDialog(dialog) {
