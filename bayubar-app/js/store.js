@@ -147,12 +147,13 @@
 
   function categoryImage(category) {
     const c = norm(category);
-    if (/cerveza/.test(c)) return 'https://images.unsplash.com/photo-1774403269113-43095738ff07?auto=format&fit=crop&w=700&q=84';
-    if (/whisky|whiskey|ron/.test(c)) return 'https://images.unsplash.com/photo-1775421122859-3b4396ee109c?auto=format&fit=crop&w=700&q=84';
-    if (/pisco|vodka|licor/.test(c)) return 'https://images.unsplash.com/photo-1718221367403-70a706c8a80e?auto=format&fit=crop&w=700&q=84';
-    if (/vino|espum/.test(c)) return 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=84';
-    if (/coctel|cocktail/.test(c)) return 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=700&q=84';
-    return 'https://images.unsplash.com/photo-1718221367403-70a706c8a80e?auto=format&fit=crop&w=700&q=84';
+    if (/cerveza/.test(c)) return 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=720&q=85';
+    if (/whisky|whiskey|ron/.test(c)) return 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=720&q=85';
+    if (/pisco|vodka/.test(c)) return 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=720&q=85';
+    if (/vino|espum/.test(c)) return 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=720&q=85';
+    if (/coctel|cocktail/.test(c)) return 'https://images.unsplash.com/photo-1513558161293-cdaf765edfd4?auto=format&fit=crop&w=720&q=85';
+    if (/licor|extra/.test(c)) return 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=720&q=85';
+    return 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=720&q=85';
   }
 
   function renderHomeCategories() {
@@ -171,7 +172,7 @@
     const section = $('#dailyOffers');
     const grid = $('#offersGrid');
     if (!section || !grid) return;
-    const offers = S.products.filter((p) => hasPromo(p)).slice(0, 4);
+    const offers = S.products.filter((p) => hasPromo(p) && maxQty(p) > 0).slice(0, 4);
     section.hidden = offers.length === 0;
     grid.innerHTML = offers.map(cardHtml).join('');
     bindImgFallback(grid);
@@ -223,31 +224,70 @@
     return !!p && cartSub() >= Number(p.min_subtotal || 0);
   }
   function renderPromoTicket() {
-    let el = $('#bayuGiftTicket');
     const promo = activeGiftPromo();
-    if (!promo) { if (el) el.remove(); return; }
-    if (!el) { el=document.createElement('section'); el.id='bayuGiftTicket'; el.className='wrap bayu-ticket'; const combos=$('#combos'); combos.parentNode.insertBefore(el,combos); }
-    const missing=Math.max(0,Number(promo.min_subtotal)-cartSub());
+    let trigger = $('#giftFloatButton');
+    let dialog = $('#giftPromoDialog');
+    if (!promo) {
+      if (trigger) trigger.remove();
+      if (dialog) dialog.remove();
+      return;
+    }
+    if (!trigger) {
+      trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.id = 'giftFloatButton';
+      trigger.className = 'gift-float-button';
+      trigger.setAttribute('aria-haspopup', 'dialog');
+      trigger.setAttribute('aria-controls', 'giftPromoDialog');
+      trigger.innerHTML = '<img src="./assets/gift-bayu.svg" alt=""><span><b>Tu regalo</b><small>Por tu compra</small></span><i aria-hidden="true">✦</i>';
+      document.body.appendChild(trigger);
+      trigger.addEventListener('click', () => {
+        const current = $('#giftPromoDialog');
+        if (current && !current.open) current.showModal();
+      });
+    }
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.id = 'giftPromoDialog';
+      dialog.className = 'gift-promo-dialog';
+      dialog.setAttribute('aria-labelledby', 'giftPromoTitle');
+      dialog.innerHTML = '<div class="gift-modal-shell"><button class="gift-modal-close" type="button" aria-label="Cerrar promoción">×</button><div class="gift-modal-content"></div></div>';
+      document.body.appendChild(dialog);
+      dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+      $('.gift-modal-close', dialog).addEventListener('click', () => dialog.close());
+    }
+    const missing = Math.max(0, Number(promo.min_subtotal) - cartSub());
     const unlocked = missing <= 0;
-    const giftImage = safeUrl(promo.gift_image);
-    const threshold=Math.max(1,Number(promo.min_subtotal)||1);
-    const progress=Math.min(100,Math.max(0,(cartSub()/threshold)*100));
-    el.innerHTML=`<div class="gift-card">
-      <div class="gift-card-head"><span class="gift-brand">BAYU BAR</span><span class="gift-ribbon"><span aria-hidden="true">♔</span> REGALO</span></div>
-      <div class="gift-card-body">
-        <div class="gift-card-copy"><p class="overline">PROMOCIÓN ESPECIAL BAYU</p><h2>${esc(promo.title||'Tu compra viene con regalo')}</h2><p class="gift-subtitle">${esc(promo.description||'Llévate un snack por tu compra.')}</p>
-          <div class="ticket-gift">${giftImage?'<img src="'+esc(giftImage)+'" alt="" loading="lazy">':''}<b>${esc(promo.gift_name)}</b><span>× ${Number(promo.gift_qty)||1}</span></div>
-        </div>
-        <div class="gift-visual" aria-hidden="true"><span class="gift-spark spark-one">✦</span><span class="gift-spark spark-two">✦</span><div class="gift-box"><i></i><b></b><span></span></div><small>UN DETALLE<br>PARA TI</small></div>
+    const threshold = Math.max(1, Number(promo.min_subtotal) || 1);
+    const progress = Math.min(100, Math.max(0, (cartSub() / threshold) * 100));
+    const giftImage = safeUrl(promo.gift_image) || './assets/gift-bayu.svg';
+    const qty = Math.max(1, Number(promo.gift_qty) || 1);
+    const status = unlocked ? '¡Tu regalo está desbloqueado!' : cartSub() > 0 ? 'Agrega ' + money(missing) + ' más para conseguirlo.' : 'Agrega productos al carrito y desbloquea tu regalo.';
+    $('.gift-modal-content', dialog).innerHTML = `
+      <div class="gift-modal-topline"><span class="gift-modal-kicker">DETALLE ESPECIAL BAYU</span><span class="gift-modal-pill">REGALO</span></div>
+      <div class="gift-modal-hero">
+        <div class="gift-modal-copy"><p class="overline">PROMOCIÓN ESPECIAL</p>
+          <h2 id="giftPromoTitle">${esc(promo.title || 'Tu compra viene con regalo')}</h2>
+          <p class="gift-modal-description">${esc(promo.description || 'Llévate un detalle especial por tu compra.')}</p></div>
+        <div class="gift-modal-image"><img src="${esc(giftImage)}" alt="${esc(promo.gift_name || 'Regalo BAYU')}" loading="lazy"></div>
       </div>
-      <div class="gift-progress-wrap"><div class="gift-progress-text">${unlocked?'¡Felicidades! Tu regalo está desbloqueado.':`Agrega <strong>${money(missing)}</strong> más para recibir tu regalo.`}</div><div class="gift-progress-track"><span style="width:${progress.toFixed(1)}%"></span></div><small>${money(cartSub())} de ${money(threshold)}</small></div>
-    </div>`;
+      <div class="gift-modal-product"><span class="gift-product-icon"><img src="./assets/gift-bayu.svg" alt=""></span>
+        <span><small>RECIBIRÁS</small><b>${esc(promo.gift_name || 'Regalo sorpresa')}</b></span><strong>× ${qty}</strong></div>
+      <div class="gift-modal-progress"><div class="gift-progress-heading"><b>${status}</b><span>${progress.toFixed(0)}%</span></div>
+        <div class="gift-progress-track"><span style="width:${progress.toFixed(1)}%"></span></div>
+        <div class="gift-progress-values"><span>Tu compra: ${money(cartSub())}</span><span>Meta: ${money(threshold)}</span></div></div>
+      <p class="gift-modal-terms">El regalo se agregará automáticamente al pedido al alcanzar el monto mínimo. Sujeto a disponibilidad de stock y condiciones de la promoción.</p>
+      <button class="btn gift-modal-cta" type="button">${unlocked ? '¡Seguir con mi pedido!' : 'Ver productos y completar mi compra'} <span aria-hidden="true">→</span></button>`;
+    $('.gift-modal-cta', dialog).addEventListener('click', () => {
+      dialog.close();
+      $('#catalogo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   function renderCombos() {
     const sec = $('#combos'); const has = S.combos.length > 0;
     sec.hidden = !has; $('#comboFeature').hidden = !has;
-    $('#navCombos').hidden = !has && !S.products.some((p) => hasPromo(p));
+    $('#navCombos').hidden = !has && !S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
     $('#comboGrid').innerHTML = has ? S.combos.map(comboHtml).join('') : '';
     bindImgFallback($('#comboGrid'));
   }
