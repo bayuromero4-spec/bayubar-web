@@ -145,17 +145,25 @@
     }).join('');
   }
 
+  function categoryImage(category) {
+    const c = norm(category);
+    if (/cerveza/.test(c)) return 'https://images.unsplash.com/photo-1774403269113-43095738ff07?auto=format&fit=crop&w=700&q=84';
+    if (/whisky|whiskey|ron/.test(c)) return 'https://images.unsplash.com/photo-1775421122859-3b4396ee109c?auto=format&fit=crop&w=700&q=84';
+    if (/pisco|vodka|licor/.test(c)) return 'https://images.unsplash.com/photo-1718221367403-70a706c8a80e?auto=format&fit=crop&w=700&q=84';
+    if (/vino|espum/.test(c)) return 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=84';
+    if (/coctel|cocktail/.test(c)) return 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=700&q=84';
+    return 'https://images.unsplash.com/photo-1718221367403-70a706c8a80e?auto=format&fit=crop&w=700&q=84';
+  }
+
   function renderHomeCategories() {
     const grid = $('#homeCategoryGrid');
     if (!grid) return;
     const cats = Array.from(new Set(S.products.map((p) => p.category).filter(Boolean)));
-    grid.innerHTML = cats.slice(0, 6).map((category) => {
-      const items = S.products.filter((p) => p.category === category);
-      const featured = items.find((p) => safeUrl(p.image_url));
-      const image = featured ? safeUrl(featured.image_url) : '';
-      const style = image ? ' style="--cat-image:url(&quot;' + esc(image) + '&quot;)"' : '';
-      return '<button class="home-category-card" type="button" data-home-cat="' + esc(category) + '"' + style + '>' +
-        '<span class="home-category-copy"><strong>' + esc(category) + '</strong><small>' + items.length + ' productos</small></span><span class="home-category-arrow" aria-hidden="true">↗</span></button>';
+    grid.innerHTML = cats.slice(0, 7).map((category) => {
+      const count = S.products.filter((p) => p.category === category).length;
+      const image = categoryImage(category);
+      return '<button class="home-category-card" type="button" data-home-cat="' + esc(category) + '" style="--cat-image:url(&quot;' + esc(image) + '&quot;)">' +
+        '<span class="home-category-copy"><strong>' + esc(category) + '</strong><small>' + count + ' productos</small></span><span class="home-category-arrow" aria-hidden="true">↗</span></button>';
     }).join('');
   }
 
@@ -163,7 +171,7 @@
     const section = $('#dailyOffers');
     const grid = $('#offersGrid');
     if (!section || !grid) return;
-    const offers = S.products.filter((p) => hasPromo(p) && maxQty(p) > 0).slice(0, 4);
+    const offers = S.products.filter((p) => hasPromo(p)).slice(0, 4);
     section.hidden = offers.length === 0;
     grid.innerHTML = offers.map(cardHtml).join('');
     bindImgFallback(grid);
@@ -239,7 +247,7 @@
   function renderCombos() {
     const sec = $('#combos'); const has = S.combos.length > 0;
     sec.hidden = !has; $('#comboFeature').hidden = !has;
-    $('#navCombos').hidden = !has && !S.products.some((p) => hasPromo(p) && maxQty(p) > 0);
+    $('#navCombos').hidden = !has && !S.products.some((p) => hasPromo(p));
     $('#comboGrid').innerHTML = has ? S.combos.map(comboHtml).join('') : '';
     bindImgFallback($('#comboGrid'));
   }
