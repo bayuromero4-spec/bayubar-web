@@ -196,7 +196,8 @@
     if (!el) { el=document.createElement('section'); el.id='bayuGiftTicket'; el.className='wrap bayu-ticket'; const combos=$('#combos'); combos.parentNode.insertBefore(el,combos); }
     const missing=Math.max(0,Number(promo.min_subtotal)-cartSub());
     const unlocked = missing <= 0;
-    el.innerHTML=`<div class="ticket-stub"><span class="ticket-kicker">BAYU BAR</span><span class="ticket-admit">REGALO</span></div><div class="ticket-copy"><p class="overline">PROMOCIÓN ESPECIAL BAYU</p><h2>${esc(promo.title)}</h2><p>${esc(promo.description||'Tu pedido tiene un regalo especial.')}</p><div class="ticket-gift">🎁 <b>${esc(promo.gift_name)}</b> × ${Number(promo.gift_qty)||1}</div><p class="ticket-progress">${unlocked?'¡Regalo desbloqueado! Se agregará automáticamente a tu pedido.':`Agrega ${money(missing)} más para recibir tu regalo.`}</p></div>`;
+    const giftImage = safeUrl(promo.gift_image);
+    el.innerHTML=`<div class="ticket-stub"><span class="ticket-kicker">BAYU BAR</span><span class="ticket-admit">REGALO</span></div><div class="ticket-copy"><p class="overline">PROMOCIÓN ESPECIAL BAYU</p><h2>${esc(promo.title)}</h2><p>${esc(promo.description||'Tu pedido tiene un regalo especial.')}</p><div class="ticket-gift">${giftImage?'<img src="'+esc(giftImage)+'" alt="" loading="lazy">':''} <b>${esc(promo.gift_name)}</b> × ${Number(promo.gift_qty)||1}</div><p class="ticket-progress">${unlocked?'¡Regalo desbloqueado! Se agregará automáticamente a tu pedido.':`Agrega ${money(missing)} más para recibir tu regalo.`}</p></div>`;
   }
 
   function renderCombos() {
