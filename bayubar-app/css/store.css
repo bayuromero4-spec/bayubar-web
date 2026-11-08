@@ -1373,3 +1373,33 @@ main{overflow:clip}.wrap{max-width:1320px}
  .loyalty-details-coin b{font-size:23px}
  .loyalty-details-coin small{display:none}
 }
+
+
+/* BAYU COIN: acceso desde el bloque principal y ventana modal */
+.points-feature{font:inherit;text-align:left;color:inherit;cursor:pointer;width:100%;border:1px solid rgba(0,217,242,.4)}
+.points-feature:focus-visible{outline:2px solid #00d9ed;outline-offset:4px}
+.points-promo-dialog::backdrop{background:rgba(2,5,12,.78);backdrop-filter:blur(8px)}
+.points-modal-shell{max-height:min(88vh,760px);overflow:auto}
+.points-modal-content{display:flex;flex-direction:column;gap:16px}
+.points-modal-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,.65fr);align-items:center;gap:12px}
+.points-modal-hero .gift-modal-copy h2{font-size:clamp(28px,5vw,42px);line-height:1.05;margin:8px 0}
+.points-modal-hero .gift-modal-description{color:#c5cede;line-height:1.55}
+.points-modal-image{display:flex;align-items:center;justify-content:center}
+.points-modal-image img{width:100%;max-width:210px;height:auto;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(255,190,65,.2))}
+.points-modal-rule{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid rgba(255,197,92,.32);border-radius:16px;background:rgba(255,194,70,.07)}
+.points-modal-rule strong,.points-modal-rule small{color:#f2d18c;letter-spacing:.12em;font-size:11px}
+.points-modal-rule b{font-size:26px;margin-left:auto}
+.points-modal-note{margin:0;color:#aeb9ca;font-size:13px;line-height:1.55}
+.points-modal-cta{align-self:flex-start;display:inline-flex;align-items:center;gap:12px}
+@media(max-width:600px){
+ .points-modal-shell{padding:22px 17px}
+ .points-modal-content{gap:12px}
+ .points-modal-hero{grid-template-columns:minmax(0,1fr) 105px;gap:6px}
+ .points-modal-hero .gift-modal-copy h2{font-size:27px}
+ .points-modal-hero .gift-modal-description{font-size:13px;line-height:1.45}
+ .points-modal-image img{max-width:110px}
+ .points-modal-rule{padding:11px 12px}
+ .points-modal-rule b{font-size:23px}
+ .points-modal-note{font-size:12px}
+ .points-modal-cta{width:100%;justify-content:center}
+}
