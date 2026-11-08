@@ -1403,3 +1403,21 @@ main{overflow:clip}.wrap{max-width:1320px}
  .points-modal-note{font-size:12px}
  .points-modal-cta{width:100%;justify-content:center}
 }
+
+
+/* Navegación simplificada y ventana de combos/ofertas */
+.combo-feature{font:inherit;text-align:left;color:inherit;cursor:pointer;width:100%}
+.combo-feature:focus-visible{outline:2px solid #ff168a;outline-offset:4px}
+.combos-promo-dialog .gift-modal-content{gap:14px}
+.combos-modal-title{margin:0;font-size:clamp(27px,5vw,38px);line-height:1.08}
+.combos-modal-intro{margin:0;color:#bac6d6;line-height:1.5;font-size:14px}
+.combos-modal-section{display:grid;gap:12px}
+.combos-modal-section h3{margin:5px 0 0;color:#f6f7fb;font-size:18px}
+.combos-modal-section .combo-grid,.combos-modal-section .offers-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.combos-modal-empty{color:#aeb9ca;text-align:center;padding:22px 8px}
+@media(max-width:600px){
+ .combos-promo-dialog .gift-modal-shell{padding:22px 15px}
+ .combos-modal-section .combo-grid,.combos-modal-section .offers-grid{grid-template-columns:1fr;gap:10px}
+ .combos-modal-title{font-size:28px}
+ .combos-modal-intro{font-size:13px}
+}
