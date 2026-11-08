@@ -131,14 +131,13 @@
         sb.from('settings').select('key,value'),
         sb.from('public_bayu_promotion').select('*').limit(1)
       ]);
+      // El catálogo depende de productos; fallos en datos auxiliares no deben ocultarlo.
       if (pr.error) throw pr.error;
-      if (zo.error) throw zo.error;
-      if (se.error) throw se.error;
       S.promotions = pm.error ? [] : (pm.data || []);
       S.products = pr.data || [];
-      S.combos = co.error ? [] : (co.data || []);   // si la sección de combos falla, el catálogo sigue funcionando
-      S.zones = zo.data || [];
-      (se.data || []).forEach((r) => { S.settings[r.key] = r.value; });
+      S.combos = co.error ? [] : (co.data || []);
+      S.zones = zo.error ? [] : (zo.data || []);
+      if (!se.error) (se.data || []).forEach((r) => { S.settings[r.key] = r.value; });
     }
     S.loadedAt = Date.now();
     // La cantidad en el carrito nunca puede superar lo disponible.
