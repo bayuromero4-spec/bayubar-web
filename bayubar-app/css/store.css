@@ -434,3 +434,12 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
  .promo{padding:20px 17px;border-radius:21px;gap:16px}
  .story{padding-top:26px;padding-bottom:30px;gap:16px}
 }
+
+
+/* Imágenes de catálogo completas: no recortar etiquetas ni botellas */
+.art{background:linear-gradient(145deg,#111a2b,#080c16)!important}
+.art img.ph{object-fit:contain!important;object-position:center center!important;padding:5px;box-sizing:border-box}
+@media(max-width:1000px){
+ .art{height:clamp(150px,38vw,230px);padding:0}
+ .art img.ph{width:100%;height:100%;object-fit:contain!important;padding:4px}
+}
