@@ -5,26 +5,39 @@
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 
-  // Bloquea el inicio mientras cualquier ventana modal esté abierta.
+  // Bloqueo compartido del fondo: conserva la posición y evita desbloqueos prematuros.
   function showLockedDialog(dialog) {
     if (!dialog || dialog.open) return;
-    const y = window.scrollY || window.pageYOffset || 0;
-    window.__bayuModalScrollY = y;
-    document.documentElement.classList.add('bayu-modal-open');
-    document.body.style.position = 'fixed';
-    document.body.style.top = '-' + y + 'px';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
+    const opened = window.__bayuOpenDialogs || (window.__bayuOpenDialogs = new Set());
+    if (opened.size === 0) {
+      window.__bayuModalScrollY = window.scrollY || window.pageYOffset || 0;
+      window.__bayuBodyLockStyles = {
+        position: document.body.style.position,
+        top: document.body.style.top,
+        left: document.body.style.left,
+        right: document.body.style.right,
+        width: document.body.style.width
+      };
+      document.documentElement.classList.add('bayu-modal-open');
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + window.__bayuModalScrollY + 'px';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+    }
+    opened.add(dialog);
     dialog.addEventListener('close', () => {
-      if (document.querySelector('dialog[open]')) return;
+      opened.delete(dialog);
+      if (opened.size || document.querySelector('dialog[open]')) return;
       document.documentElement.classList.remove('bayu-modal-open');
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.width = '';
+      const prev = window.__bayuBodyLockStyles || {};
+      document.body.style.position = prev.position || '';
+      document.body.style.top = prev.top || '';
+      document.body.style.left = prev.left || '';
+      document.body.style.right = prev.right || '';
+      document.body.style.width = prev.width || '';
       window.scrollTo(0, window.__bayuModalScrollY || 0);
+      window.__bayuBodyLockStyles = null;
     }, { once: true });
     dialog.showModal();
   }
