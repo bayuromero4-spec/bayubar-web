@@ -464,6 +464,7 @@
     $('#waHero').href = hello; $('#waContact').href = hello;
     const loyalty = $('#loyaltyWhatsApp');
     if (loyalty) loyalty.href = waLink('Hola BAYU BAR, quiero consultar mi saldo de puntos y las recompensas disponibles. Mi nombre y celular son: ');
+    if (loyalty) loyalty.href = waLink('Hola BAYU BAR, quiero consultar mi saldo de puntos y las recompensas disponibles. Mi nombre y celular son: ');
     $('#proofFree').hidden = !free;
     $('#benefitDelivery').textContent = free ? (min > 0 ? `Gratis desde ${money(min)}` : 'Gratis por reapertura') : 'Cobertura en San Miguel';
     const items = ['BAYU BAR', 'DRINKS · DELIVERY', ...(free ? ['DELIVERY GRATIS'] : []), 'SAN MIGUEL DE PALLAQUES', 'ATENCIÓN +18'];
@@ -523,6 +524,11 @@
     else if (productCard) { const p = S.products.find((x) => String(x.id) === String(productCard.dataset.card)); if (p) openProduct(p); }
   });
   $('#search').addEventListener('input', BB.debounce((e) => { S.query = e.target.value; renderGrid(); }, 120));
+  const pointsDialog = $('#pointsPromoDialog');
+  $('#pointsFeature')?.addEventListener('click', () => { if (pointsDialog && !pointsDialog.open) pointsDialog.showModal(); });
+  $('#pointsModalClose')?.addEventListener('click', () => pointsDialog?.close());
+  pointsDialog?.addEventListener('click', (event) => { if (event.target === pointsDialog) pointsDialog.close(); });
+
   $('#cartOpen').addEventListener('click', openCart);
   $('#dockBtn').addEventListener('click', openCart);
   $('#dlgClose').addEventListener('click', closeCart);
