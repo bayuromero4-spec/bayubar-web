@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./css/base.css">
-<link rel="stylesheet" href="./css/store.css?v=20261107-catalog-combos1">
+<link rel="stylesheet" href="./css/store.css?v=20261108-premium2">
 </head>
 <body>
 
@@ -32,7 +32,7 @@
     <nav class="nav glass-nav" aria-label="Principal">
       <a href="#inicio" class="nav-active">⌂ <span>Inicio</span></a>
       <a href="#catalogo">▦ <span>Productos</span></a>
-      <a href="#combos" id="navCombos">◇ <span>Promos</span></a>
+      <a href="#dailyOffers" id="navCombos">◇ <span>Promos</span></a>
       <a href="#puntos">✧ <span>Puntos</span></a>
     </nav>
     <a class="top-search" href="#search" aria-label="Buscar productos">⌕</a>
@@ -60,7 +60,17 @@
         </div>
         <ul class="proof rise" style="--d:.95s"><li>Selección BAYU</li><li id="proofFree" hidden>Delivery gratis por reapertura</li><li>Atención +18</li></ul>
       </div>
-      <div class="hero-art"><div class="hero-product-showcase" id="heroProductStack" aria-label="Selección de bebidas BAYU BAR"></div></div>
+      <div class="hero-art">
+        <div class="hero-photo-shell">
+          <img class="hero-photo" src="https://res.cloudinary.com/foodfriends/image/upload/w_1200%2Ch_600%2Cc_fill%2Cf_auto%2Cq_auto/restaurant/e9a90c2fa40db9c3c4bed6a02eb48ea2.png" alt="Selección de licores y bebidas BAYU BAR" fetchpriority="high">
+          <span class="hero-photo-caption">SELECCIÓN BAYU · DELIVERY</span>
+        </div>
+      </div>
+      <aside class="hero-quick" aria-label="Ventajas BAYU BAR">
+        <a class="hero-quick-card" href="#delivery"><span class="hero-quick-icon cyan">↗</span><span><b>Delivery rápido</b><small>En San Miguel y alrededores</small></span></a>
+        <a class="hero-quick-card" href="#dailyOffers"><span class="hero-quick-icon pink">✧</span><span><b>Promociones exclusivas</b><small>Combos y ofertas especiales</small></span></a>
+        <a class="hero-quick-card" href="#puntos"><span class="hero-quick-icon violet">☆</span><span><b>Puntos BAYU</b><small>Compra, acumula y canjea</small></span></a>
+      </aside>
     </div>
   </section>
 
@@ -84,6 +94,23 @@
       <a class="home-see-all" href="#catalogo">Ver todas <span aria-hidden="true">→</span></a>
     </div>
     <div class="grid offers-grid" id="offersGrid"></div>
+  </section>
+
+  <section class="wrap home-feature-panels" aria-label="Beneficios BAYU BAR">
+    <a class="home-feature-panel combo-feature" href="#combos" id="comboFeature" hidden>
+      <span class="feature-eyebrow">PARA COMPARTIR</span>
+      <span class="feature-title">Combos BAYU<br><em>para compartir.</em></span>
+      <span class="feature-description">Reúne, brinda y disfruta.</span>
+      <span class="feature-art combo-art" aria-hidden="true"><i>✧</i><b>🥂</b><small>✦</small></span>
+      <span class="feature-link">Explorar combos →</span>
+    </a>
+    <a class="home-feature-panel points-feature" href="#puntos" id="pointsFeature">
+      <span class="feature-eyebrow">PROGRAMA DE FIDELIDAD</span>
+      <span class="feature-title">Acumula<br><em>Puntos BAYU.</em></span>
+      <span class="feature-description">Compra, acumula y canjea por recompensas.</span>
+      <span class="feature-art points-art" aria-hidden="true"><b>✦</b><i>✧</i><small>✦</small></span>
+      <span class="feature-link">Conoce tus puntos →</span>
+    </a>
   </section>
 
   <section class="wrap combos" id="combos" hidden>
@@ -229,6 +256,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="./js/config.js"></script>
 <script src="./js/common.js"></script>
-<script src="./js/store.js?v=20261107-productmodal1"></script>
+<script src="./js/store.js?v=20261108-premium2"></script>
 </body>
 </html>
