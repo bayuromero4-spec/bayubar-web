@@ -334,3 +334,16 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
  .gift-progress-text{font-size:14px}
 }
 @media(min-width:601px) and (max-width:850px){.gift-card-body{grid-template-columns:minmax(0,1fr) 190px;padding:22px}.gift-visual{min-height:180px}}
+
+
+/* BAYU BAR · imagen principal visible desde el primer pantallazo móvil */
+@media(max-width:760px){
+  .hero-in{display:flex;flex-direction:column;align-items:stretch;gap:18px}
+  .hero-art{order:-1;display:flex;flex:0 0 auto;width:100%;min-height:0;margin:0 0 4px}
+  .hero-glass-card{width:100%;min-height:190px;height:190px}
+  .hero-glass-card img{width:175px;height:165px;object-fit:contain}
+  .hero-glass-label{top:14px;left:18px}
+  .hero-glass-foot{bottom:13px;right:18px}
+  .hero-copy{order:0;width:100%;flex:0 0 auto;gap:20px}
+  .hero .proof{padding-bottom:4px}
+}
