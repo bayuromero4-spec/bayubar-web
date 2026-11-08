@@ -1545,3 +1545,63 @@ html.bayu-modal-open,html.bayu-modal-open body{overflow:hidden!important;overscr
  .combos-promo-dialog .combos-modal-section .card .art{height:118px}
  .combos-promo-dialog .combos-modal-section .card .card-body{padding:9px}
 }
+
+
+/* BAYU BAR · ajuste final de proporciones y responsive para producción */
+:root{scroll-padding-top:88px}
+html.bayu-modal-open{overscroll-behavior:none}
+body{overflow-x:clip}
+.wrap{width:min(100%,1320px)}
+.home-feature-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2vw,22px);align-items:stretch}
+.home-feature-panel{min-width:0;min-height:clamp(172px,17vw,218px);overflow:hidden}
+.feature-title{max-width:75%;font-size:clamp(25px,2.5vw,38px);line-height:1.08}
+.feature-description{max-width:68%;line-height:1.45}
+.feature-art{max-width:40%;pointer-events:none}
+.catalog{scroll-margin-top:88px}
+.catalog .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.5vw,20px)}
+.catalog .card,.offers-grid .card,.combo-grid .card{min-width:0;height:100%}
+.catalog .art{height:clamp(170px,17vw,230px)}
+.card-body{min-width:0}
+.card-body h3,.card-body p{overflow-wrap:anywhere}
+.card-foot{flex-wrap:wrap}
+.price{white-space:nowrap}
+.add,.stepper{flex-shrink:0}
+.gift-promo-dialog,.points-promo-dialog,.combos-promo-dialog,#cartDlg,.product-dialog{overscroll-behavior:contain}
+.gift-promo-dialog .gift-modal-shell,.points-promo-dialog .gift-modal-shell{max-height:min(88dvh,780px);overflow-y:auto;overscroll-behavior:contain}
+.gift-promo-dialog::backdrop,#cartDlg::backdrop,.product-dialog::backdrop{background:rgba(1,4,10,.78);backdrop-filter:blur(7px)}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan,#00d9ed);outline-offset:3px}
+img{max-width:100%}
+@media(min-width:761px){
+ .mobile-glass-nav{display:none!important}
+ .hero-in{max-width:1320px}
+ .home-feature-panels{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(min-width:761px) and (max-width:1100px){
+ .catalog .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .home-feature-panel{min-height:175px}
+}
+@media(max-width:760px){
+ .catalog .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .home-feature-panels{grid-template-columns:1fr;gap:11px}
+ .home-feature-panel{min-height:142px;padding:17px}
+ .feature-title{font-size:clamp(24px,6vw,30px);max-width:68%}
+ .feature-description{font-size:12px;max-width:65%}
+ .catalog{padding-top:34px}
+ .catalog .art{height:clamp(120px,35vw,165px)}
+ .catalog .card-body{padding:9px 10px 12px}
+ .catalog .card-body h3{font-size:clamp(12px,3.2vw,14px)}
+ .catalog .price{font-size:clamp(15px,4vw,18px)}
+ .catalog .add{min-height:36px}
+ .gift-promo-dialog,.points-promo-dialog,.combos-promo-dialog,#cartDlg,.product-dialog{max-width:calc(100vw - 16px)}
+ .gift-float-button{max-width:calc(100vw - 28px)}
+}
+@media(max-width:390px){
+ .catalog .grid{grid-template-columns:1fr}
+ .catalog .art{height:190px}
+ .home-feature-panel{min-height:136px}
+ .mobile-glass-nav{left:8px;right:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
