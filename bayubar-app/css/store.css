@@ -893,3 +893,14 @@ body{background:radial-gradient(ellipse at 5% 18%,rgba(0,210,245,.12),transparen
 @media(prefers-reduced-motion:reduce){
  .hero-quick-card,.home-feature-panel{transition:none}
 }
+
+/* Polish pass · category imagery, icons, feature-panel depth */
+.hero-quick-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.home-category-grid{grid-template-columns:repeat(7,minmax(0,1fr))}
+.home-category-card{background-image:linear-gradient(180deg,rgba(4,7,13,.03) 6%,rgba(4,7,13,.82) 100%),var(--cat-image);background-size:cover;background-position:center}
+.home-feature-panel>*:not(.feature-art){position:relative;z-index:2}
+.home-feature-panel .feature-art{z-index:1;pointer-events:none}
+.feature-art{filter:drop-shadow(0 0 16px rgba(255,25,150,.24))}
+.points-art{filter:drop-shadow(0 0 16px rgba(0,210,245,.28))}
+@media(max-width:1250px){.home-category-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:900px){.home-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
