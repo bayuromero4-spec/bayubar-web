@@ -443,3 +443,26 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
  .art{height:clamp(150px,38vw,230px);padding:0}
  .art img.ph{width:100%;height:100%;object-fit:contain!important;padding:4px}
 }
+
+
+/* Ficha de producto al tocar una bebida */
+.product-dialog{width:min( min(92vw,560px), calc(100% - 28px));max-width:560px;max-height:min(88dvh,820px);padding:0;border:1px solid rgba(34,195,238,.45);border-radius:26px;background:linear-gradient(145deg,#101b2b,#090d19 60%,#1b0b20);color:#f4f7ff;box-shadow:0 28px 90px rgba(0,0,0,.72),0 0 35px rgba(34,195,238,.14);overflow:auto}
+.product-dialog::backdrop{background:rgba(1,4,12,.78);backdrop-filter:blur(7px)}
+.product-modal-shell{position:relative}
+.product-modal-close{position:absolute;z-index:3;top:12px;right:12px;width:42px;height:42px;border:1px solid rgba(255,255,255,.28);border-radius:50%;background:rgba(4,9,19,.78);color:#fff;font-size:28px;line-height:1}
+.product-modal-image{height:clamp(220px,48vh,390px);display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 45%,rgba(34,195,238,.16),transparent 68%),#080d18}
+.product-modal-image .ph{width:100%;height:100%;object-fit:contain!important;padding:12px;box-sizing:border-box}
+.product-modal-image svg{width:auto;height:82%;max-width:90%}
+.product-modal-info{padding:22px 24px 25px}
+.product-modal-category{color:#5cdbf5;font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+.product-modal-info h2{margin:7px 0 3px;font-size:clamp(24px,6vw,32px);line-height:1.15}
+.product-modal-size{margin:0;color:#9caac0;font-size:14px}
+.product-modal-description{margin:17px 0;color:#d0d9e8;font-size:15px;line-height:1.6;white-space:pre-line}
+.product-modal-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:15px;border-top:1px solid rgba(255,255,255,.12)}
+.product-modal-bottom strong{font-size:27px}.product-modal-bottom s{margin-left:9px;color:#8792a8}
+.product-modal-stock{padding:7px 12px;border:1px solid rgba(0,220,190,.35);border-radius:99px;color:#75e8d2;font-size:12px;font-weight:700}
+.product-modal-stock.is-out{border-color:rgba(255,110,130,.35);color:#ff9ba9}
+.product-modal-action{margin-top:17px}.product-modal-action .add{width:100%;min-height:48px}
+.product-modal-action .stepper{justify-content:flex-end}
+@media(max-width:600px){.product-dialog{width:calc(100% - 24px);max-height:86dvh;border-radius:22px}.product-modal-image{height:clamp(190px,34vh,290px)}.product-modal-info{padding:18px 18px 20px}.product-modal-description{font-size:14px;margin:13px 0}.product-modal-bottom strong{font-size:24px}}
+#grid .card{cursor:pointer}#grid .card button{cursor:pointer}
