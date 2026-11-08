@@ -368,6 +368,8 @@
     const num = waNumber();
     const hello = waLink('Hola BAYU BAR, quiero hacer un pedido.');
     $('#waHero').href = hello; $('#waContact').href = hello;
+    const loyalty = $('#loyaltyWhatsApp');
+    if (loyalty) loyalty.href = waLink('Hola BAYU BAR, quiero consultar mi saldo de puntos y las recompensas disponibles. Mi nombre y celular son: ');
     $('#proofFree').hidden = !free;
     $('#benefitDelivery').textContent = free ? (min > 0 ? `Gratis desde ${money(min)}` : 'Gratis por reapertura') : 'Cobertura en San Miguel';
     const items = ['BAYU BAR', 'DRINKS · DELIVERY', ...(free ? ['DELIVERY GRATIS'] : []), 'SAN MIGUEL DE PALLAQUES', 'ATENCIÓN +18'];
