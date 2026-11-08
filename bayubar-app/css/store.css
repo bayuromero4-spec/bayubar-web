@@ -237,3 +237,14 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
 .mobile-glass-nav a:active,.mobile-glass-nav button:active{background:rgba(34,195,238,.17)}
 #dock{bottom:82px}.footer-in{padding-bottom:130px}
 }
+
+/* Ticket regalo y línea de regalo en carrito */
+.bayu-ticket{display:grid;grid-template-columns:150px 1fr;overflow:hidden;margin:30px auto;padding:0;border:1px solid rgba(34,195,238,.38);border-radius:26px;background:linear-gradient(115deg,rgba(6,22,36,.96),rgba(20,10,27,.94));box-shadow:0 18px 55px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.12);backdrop-filter:blur(22px)}
+.ticket-stub{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;padding:22px;background:linear-gradient(160deg,rgba(0,194,230,.2),rgba(224,16,106,.18));border-right:1px dashed rgba(255,255,255,.25)}
+.ticket-kicker{font-weight:900;letter-spacing:.12em;font-size:15px;color:#fff}.ticket-admit{font-size:11px;letter-spacing:.22em;color:#8deeff;font-weight:800}
+.ticket-copy{padding:22px 26px}.ticket-copy h2{margin:4px 0 8px;font-size:clamp(22px,3vw,30px)}.ticket-copy>p:not(.overline){color:var(--muted)}
+.ticket-gift{display:flex;align-items:center;gap:12px;margin:14px 0;font-weight:800;color:#fff}.ticket-gift img{width:54px;height:54px;object-fit:contain;border-radius:12px;background:rgba(255,255,255,.08);padding:4px}
+.ticket-progress{color:#7deeff!important;font-weight:700}
+.gift-line{border:1px solid rgba(34,195,238,.3);border-radius:14px;padding:12px;background:rgba(34,195,238,.07)}
+.gift-line .num{color:#7deeff;font-size:12px}
+@media(max-width:600px){.bayu-ticket{grid-template-columns:1fr;margin:22px 12px;border-radius:20px}.ticket-stub{flex-direction:row;justify-content:space-between;padding:12px 18px;border-right:0;border-bottom:1px dashed rgba(255,255,255,.25)}.ticket-copy{padding:18px}.ticket-gift img{width:46px;height:46px}}
