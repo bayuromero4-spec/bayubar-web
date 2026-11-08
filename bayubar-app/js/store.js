@@ -346,6 +346,12 @@
     $('#cartCount').textContent = n;
     $('#dockCount').textContent = n; $('#dockTotal').textContent = money(sub);
     $('#dock').hidden = n === 0 || $('#cartDlg').open;
+    const giftButton = $('#giftFloatButton');
+    if (giftButton) {
+      // Prioridad visual al CTA del pedido: el acceso al regalo vuelve al vaciar el carrito.
+      giftButton.hidden = n > 0 || $('#cartDlg').open;
+      giftButton.setAttribute('aria-hidden', giftButton.hidden ? 'true' : 'false');
+    }
     if (bump) { [$('#cartCount'), $('#dockCount')].forEach((el) => { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }); }
   }
   function renderCart() {
