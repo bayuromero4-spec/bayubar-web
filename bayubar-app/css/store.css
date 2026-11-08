@@ -509,3 +509,95 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
   max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center center!important;
   padding:0!important;margin:0!important;
 }
+
+
+/* BAYU BAR · Rediseño Liquid Glass / licorería delivery */
+:root{--cyan:#08d9f2;--magenta:#ff168b;--magenta-hi:#ff4bb0}
+body{background:radial-gradient(ellipse at 5% 18%,rgba(0,210,245,.12),transparent 32%),radial-gradient(ellipse at 94% 42%,rgba(255,18,139,.10),transparent 30%),#05070d}
+.ticker{display:none}
+.topbar{background:rgba(5,8,16,.76);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border-bottom:1px solid rgba(255,255,255,.08)}
+.topbar-in{min-height:82px;gap:18px}
+.brand img{border-radius:16px;box-shadow:0 0 26px rgba(0,220,245,.28)}
+.brand-txt b span{color:var(--magenta)}
+.glass-nav{padding:7px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.025));box-shadow:inset 0 1px rgba(255,255,255,.12),0 10px 35px rgba(0,0,0,.28);backdrop-filter:blur(22px)}
+.glass-nav a{display:flex;align-items:center;gap:8px;padding:12px 17px;border-radius:999px;font-weight:700}
+.glass-nav a.nav-active{color:#fff;background:linear-gradient(135deg,rgba(0,220,245,.34),rgba(0,220,245,.08));box-shadow:0 0 22px rgba(0,220,245,.28),inset 0 0 0 1px rgba(0,220,245,.4)}
+.top-search{display:grid;place-items:center;flex:none;width:48px;height:48px;border:1px solid rgba(255,255,255,.18);border-radius:50%;background:rgba(255,255,255,.08);font-size:30px;line-height:1;box-shadow:inset 0 1px rgba(255,255,255,.12)}
+.cartbtn{min-height:50px;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.035));border-color:rgba(255,255,255,.2);backdrop-filter:blur(18px)}
+.hero{padding:18px 0 0}
+.hero:before{content:"";position:absolute;inset:18px max(20px,calc((100vw - 1240px)/2)) 22px;border-radius:34px;background:linear-gradient(90deg,rgba(3,9,17,.96) 0%,rgba(3,9,17,.78) 42%,rgba(3,9,17,.12) 100%),url("https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1800&q=85") center/cover no-repeat;border:1px solid rgba(0,220,245,.38);box-shadow:0 0 35px rgba(0,220,245,.12),inset 0 0 35px rgba(255,20,140,.08);z-index:-1}
+.hero .orb{display:none}
+.hero-in{min-height:420px;padding-top:56px;padding-bottom:66px;gap:20px}
+.hero-copy{flex:1 1 55%;gap:20px;padding-left:clamp(0px,3vw,38px)}
+.hero h1{font-family:var(--font);font-size:clamp(42px,6vw,76px);font-weight:900;line-height:.98;letter-spacing:-.045em}
+.hero h1 .it{color:var(--magenta);font-style:italic}
+.hero .pill{border:0;background:transparent;color:var(--cyan);padding:0;letter-spacing:.28em}
+.hero .lead{font-size:18px;color:#e0e6f1;max-width:420px}
+.hero .btn.big{border:1px solid var(--cyan);background:rgba(0,205,235,.14);box-shadow:0 0 22px rgba(0,220,245,.3),inset 0 0 18px rgba(0,220,245,.12)}
+.hero .btn.big.ghost{display:none}
+.hero .pulse{animation:none}
+.hero-art{flex:1 1 34%;min-height:270px}
+.hero-glass-card{width:min(100%,370px);height:310px;min-height:0;border:1px solid rgba(255,255,255,.16);border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.025));box-shadow:inset 0 1px rgba(255,255,255,.2),0 25px 70px rgba(0,0,0,.45);backdrop-filter:blur(12px)}
+.hero-glass-card img{width:240px;height:240px;object-fit:contain;filter:drop-shadow(0 0 24px rgba(0,220,245,.3))}
+.hero-glass-label,.hero-glass-foot{color:#d8faff}
+.benefits{margin-top:-6px;gap:14px}
+.benefit{border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.105),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(20px);box-shadow:inset 0 1px rgba(255,255,255,.1),0 12px 28px rgba(0,0,0,.22)}
+.benefit:nth-child(1) svg{stroke:var(--cyan)}.benefit:nth-child(2) svg{stroke:var(--magenta)}.benefit:nth-child(3) svg{stroke:#ff66c1}
+.catalog,.combos{padding-top:56px}
+.sec-head h2{font-family:var(--font);font-weight:850;letter-spacing:-.03em}
+.overline{color:var(--cyan)}
+.chip{background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.025));border-color:rgba(255,255,255,.15);backdrop-filter:blur(16px)}
+.chip[aria-pressed="true"]{background:linear-gradient(135deg,var(--cyan),#e9fbff);border-color:var(--cyan);color:#061018;box-shadow:0 0 20px rgba(0,220,245,.28)}
+#grid .card,#comboGrid .card{border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.025) 48%,rgba(255,20,139,.06));border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 1px rgba(255,255,255,.12),0 15px 35px rgba(0,0,0,.28)}
+#grid .card:hover,#comboGrid .card:hover{border-color:rgba(0,220,245,.65);box-shadow:0 0 25px rgba(0,220,245,.16),0 18px 38px rgba(0,0,0,.35)}
+#grid .card .art,#comboGrid .card .art{background:radial-gradient(circle at 50% 55%,rgba(0,220,245,.16),transparent 68%),#080d18!important}
+#grid .card .art img.ph,#comboGrid .card .art img.ph{object-fit:contain!important;padding:8px!important}
+.card-body{padding:14px 16px 16px}
+.price{font-size:22px}
+.add{border-color:var(--magenta);color:#ff7ebc;box-shadow:0 0 12px rgba(255,22,139,.13)}
+.add:hover{background:var(--magenta);box-shadow:0 0 18px rgba(255,22,139,.4)}
+.bayu-loyalty .loyalty-glass,.promo{border-radius:26px;background:linear-gradient(120deg,rgba(0,220,245,.12),rgba(255,22,139,.10)),rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(18px)}
+.mobile-glass-nav{border:1px solid rgba(255,255,255,.24)!important;border-radius:28px!important;background:linear-gradient(120deg,rgba(8,28,43,.88),rgba(24,17,37,.88))!important;box-shadow:0 0 30px rgba(0,220,245,.12),0 16px 42px rgba(0,0,0,.55)!important;backdrop-filter:blur(28px) saturate(180%)!important}
+.mobile-glass-nav a:focus,.mobile-glass-nav button:focus{color:var(--cyan)}
+.mobile-glass-nav a:first-child{color:var(--cyan)}
+.mobile-glass-nav button{color:var(--magenta)}
+.footer{background:rgba(3,5,10,.82)}
+@media(max-width:1000px){
+ .topbar-in{min-height:64px}
+ .glass-nav,.top-search{display:none}
+ .hero{padding:10px 0 0}
+ .hero:before{inset:10px 12px 8px;border-radius:24px;background-position:58% center}
+ .hero-in{min-height:0;padding:28px 28px 32px;gap:10px}
+ .hero-art{display:none}
+ .hero-copy{padding:0;gap:16px;max-width:78%}
+ .hero h1{font-size:clamp(36px,8vw,58px)}
+ .hero .lead{font-size:15px;max-width:310px}
+ .hero .pill{font-size:10px;letter-spacing:.18em}
+ .hero .proof{display:none}
+ .benefits{margin-top:12px;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .benefit{padding:12px 10px;gap:8px;border-radius:17px}
+ .benefit svg{width:25px;height:25px}
+ .benefit b{font-size:12px}.benefit small{font-size:10px;line-height:1.2}
+ .catalog,.combos{padding-top:38px}
+}
+@media(max-width:520px){
+ .hero:before{background-position:62% center}
+ .hero-in{padding:30px 24px 34px;min-height:300px}
+ .hero-copy{max-width:78%}
+ .hero h1{font-size:clamp(34px,9vw,48px)}
+ .hero .lead{font-size:14px;line-height:1.4}
+ .hero .btn.big{min-height:46px;padding:0 20px;font-size:14px}
+ .benefit{min-height:66px;flex-direction:column;align-items:flex-start;justify-content:center;padding:9px}
+ .benefit svg{width:22px;height:22px}
+ .benefit b{font-size:10px}.benefit small{font-size:9px}
+ .sec-head{margin-bottom:16px}
+ .sec-head h2{font-size:28px}
+ .grid{gap:10px}
+ #grid .card .art,#comboGrid .card .art{aspect-ratio:1.05 / 1!important}
+ .card-body{padding:10px 10px 12px;gap:7px}
+ .card-body h3{font-size:13px}
+ .price{font-size:17px}
+ .add{min-height:36px;padding:0 12px;font-size:13px}
+ .mobile-glass-nav{left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));padding:7px}
+ .mobile-glass-nav a,.mobile-glass-nav button{min-height:48px}
+}
