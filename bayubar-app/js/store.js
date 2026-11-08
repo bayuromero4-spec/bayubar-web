@@ -3,7 +3,31 @@
   'use strict';
   const { esc, money, norm, store: ls, toast, errMsg, cfg } = BB;
   const $ = (s, r) => (r || document).querySelector(s);
-  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const $ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+  // Bloquea el inicio mientras cualquier ventana modal esté abierta.
+  function showLockedDialog(dialog) {
+    if (!dialog || dialog.open) return;
+    const y = window.scrollY || window.pageYOffset || 0;
+    window.__bayuModalScrollY = y;
+    document.documentElement.classList.add('bayu-modal-open');
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + y + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    dialog.addEventListener('close', () => {
+      if (document.querySelector('dialog[open]')) return;
+      document.documentElement.classList.remove('bayu-modal-open');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      window.scrollTo(0, window.__bayuModalScrollY || 0);
+    }, { once: true });
+    dialog.showModal();
+  }
 
   // ------------------------------------------------------------ datos de ejemplo (modo demostración)
   const DEMO_PRODUCTS = [
@@ -251,7 +275,7 @@
       document.body.appendChild(trigger);
       trigger.addEventListener('click', () => {
         const current = $('#giftPromoDialog');
-        if (current && !current.open) current.showModal();
+        if (current && !current.open) showLockedDialog(current);
       });
     }
     if (!dialog) {
@@ -414,7 +438,7 @@
   }
   function openCart() {
     if (S.order) { step('done'); } else { step('cart'); renderCart(); }
-    if (!dlg.open) dlg.showModal();
+    if (!dlg.open) showLockedDialog(dlg);
     $('#dock').hidden = true;
   }
   function closeCart() { if (dlg.open) dlg.close(); }
@@ -534,7 +558,7 @@
         <div class="product-modal-bottom"><div><strong>${price}</strong>${promo ? `<s>${money(product.price)}</s>` : ''}</div><span class="product-modal-stock ${max < 1 ? 'is-out' : ''}">${max < 1 ? 'Agotado' : 'Disponible'}</span></div>
         <div class="product-modal-action">${actionsHtml(product.id, product.name, max, q)}</div>
       </div>`;
-    if (!productDlg.open) productDlg.showModal();
+    if (!productDlg.open) showLockedDialog(productDlg);
   }
   productDlg.addEventListener('click', (e) => { if (e.target === productDlg || e.target.closest('.product-modal-close')) productDlg.close(); });
   productDlg.addEventListener('close', () => { $('.product-modal-content', productDlg).innerHTML = ''; });
@@ -558,28 +582,16 @@
     renderCombos();
     renderOffers();
     window.__bayuCombosScrollY = window.scrollY;
-    combosDialog.showModal();
-    document.documentElement.classList.add('bayu-modal-open');
-    document.body.style.position = 'fixed';
-    document.body.style.top = '-' + window.__bayuCombosScrollY + 'px';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
+    showLockedDialog(combosDialog);
   });
   $('#combosModalClose')?.addEventListener('click', () => combosDialog?.close());
   combosDialog?.addEventListener('click', (event) => { if (event.target === combosDialog) combosDialog.close(); });
   combosDialog?.addEventListener('close', () => {
-    document.documentElement.classList.remove('bayu-modal-open');
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
-    window.scrollTo(0, window.__bayuCombosScrollY || 0);
+    // showLockedDialog restaura el desplazamiento al cerrar.
   });
 
   const pointsDialog = $('#pointsPromoDialog');
-  $('#pointsFeature')?.addEventListener('click', () => { if (pointsDialog && !pointsDialog.open) pointsDialog.showModal(); });
+  $('#pointsFeature')?.addEventListener('click', () => { if (pointsDialog && !pointsDialog.open) showLockedDialog(pointsDialog); });
   $('#pointsModalClose')?.addEventListener('click', () => pointsDialog?.close());
   pointsDialog?.addEventListener('click', (event) => { if (event.target === pointsDialog) pointsDialog.close(); });
 
