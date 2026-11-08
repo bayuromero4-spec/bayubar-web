@@ -181,13 +181,22 @@
       <div class="card-body"><div><h3>${esc(c.name)}</h3>${c.description ? `<p>${esc(c.description)}</p>` : ''}<ul class="combo-list">${list}</ul>${c.ends_on ? `<p class="until">Vigente hasta el ${esc(fmtShort(c.ends_on))}</p>` : ''}</div>
       <div class="card-foot"><span class="prices">${price}</span><span class="act">${actionsHtml(key, c.name, max, q)}</span></div></div></article>`;
   }
+  function activeGiftPromo() {
+    const p = (S.promotions || []).find((x) => x && x.ticket_code);
+    return p || null;
+  }
+  function giftUnlocked() {
+    const p = activeGiftPromo();
+    return !!p && cartSub() >= Number(p.min_subtotal || 0);
+  }
   function renderPromoTicket() {
     let el = $('#bayuGiftTicket');
-    const promo = S.promotions && S.promotions[0];
+    const promo = activeGiftPromo();
     if (!promo) { if (el) el.remove(); return; }
     if (!el) { el=document.createElement('section'); el.id='bayuGiftTicket'; el.className='wrap bayu-ticket'; const combos=$('#combos'); combos.parentNode.insertBefore(el,combos); }
     const missing=Math.max(0,Number(promo.min_subtotal)-cartSub());
-    el.innerHTML=`<div class="ticket-stub"><span class="ticket-kicker">${esc(promo.ticket_code)}</span><span class="ticket-admit">REGALO</span></div><div class="ticket-copy"><p class="overline">PROMOCIÓN ESPECIAL BAYU</p><h2>${esc(promo.title)}</h2><p>${esc(promo.description||'Tu pedido tiene un regalo especial.')}</p><div class="ticket-gift">🎁 <b>${esc(promo.gift_name)}</b> × ${Number(promo.gift_qty)||1}</div><p class="ticket-progress">${missing>0?`Agrega ${money(missing)} más para desbloquear tu regalo.`:'¡Beneficio desbloqueado! El regalo se añadirá automáticamente al confirmar tu pedido.'}</p></div>`;
+    const unlocked = missing <= 0;
+    el.innerHTML=`<div class="ticket-stub"><span class="ticket-kicker">BAYU BAR</span><span class="ticket-admit">REGALO</span></div><div class="ticket-copy"><p class="overline">PROMOCIÓN ESPECIAL BAYU</p><h2>${esc(promo.title)}</h2><p>${esc(promo.description||'Tu pedido tiene un regalo especial.')}</p><div class="ticket-gift">🎁 <b>${esc(promo.gift_name)}</b> × ${Number(promo.gift_qty)||1}</div><p class="ticket-progress">${unlocked?'¡Regalo desbloqueado! Se agregará automáticamente a tu pedido.':`Agrega ${money(missing)} más para recibir tu regalo.`}</p></div>`;
   }
 
   function renderCombos() {
@@ -252,9 +261,13 @@
   }
   function renderCart() {
     const items = cartItems();
-    $('#cartLines').innerHTML = items.length ? items.map(({ key, item, q, price, combo }) => `<div class="line"><div><b>${esc(item.name)}</b><small>${combo ? 'Combo' : esc(item.size || '')} · ${money(price * q)}</small></div>
+    const p = activeGiftPromo();
+    const unlocked = giftUnlocked();
+    const normalLines = items.length ? items.map(({ key, item, q, price, combo }) => `<div class="line"><div><b>${esc(item.name)}</b><small>${combo ? 'Combo' : esc(item.size || '')} · ${money(price * q)}</small></div>
       <div class="stepper"><button type="button" data-dec="${esc(key)}" aria-label="Quitar uno de ${esc(item.name)}">−</button><b class="num">${q}</b><button type="button" data-inc="${esc(key)}" aria-label="Agregar uno más de ${esc(item.name)}" ${q >= maxFor(key) ? 'disabled' : ''}>+</button></div></div>`).join('')
       : '<p class="empty">Aún no agregaste nada. Toca <b>Añadir</b> en cualquier bebida o combo para empezar.</p>';
+    const giftLine = p ? `<div class="line gift-line"><div><b>🎁 Regalo BAYU · ${esc(p.gift_name)}</b><small>${unlocked ? 'Incluido gratis en este pedido' : `Te faltan ${money(Math.max(0,Number(p.min_subtotal)-cartSub()))} para desbloquearlo`}</small></div><b class="num">${unlocked ? 'GRATIS' : 'PENDIENTE'}</b></div>` : '';
+    $('#cartLines').innerHTML = normalLines + giftLine;
     $('#cartSub').textContent = money(cartSub());
     $('#toCheckout').disabled = !items.length;
     $('#cartDeliveryNote').textContent = S.settings.free_delivery_enabled === true
@@ -303,7 +316,8 @@
     const name = $('#fName').value.trim(); const phone = $('#fPhone').value.trim(); const address = $('#fAddress').value.trim();
     const payment = (document.querySelector('input[name="payment"]:checked') || {}).value;
     const note = $('#fNote').value.trim(); const zone = zoneSel();
-    const ticketCode = ($('#fTicket')?.value || '').trim().toUpperCase();
+    const promo = activeGiftPromo();
+    const ticketCode = giftUnlocked() && promo ? String(promo.ticket_code).trim().toUpperCase() : ($('#fTicket')?.value || '').trim().toUpperCase();
     if (name.length < 2) return showFormError('Escribe tu nombre completo.');
     if (!/^\+?[0-9\s-]{7,16}$/.test(phone)) return showFormError('Escribe un número de celular válido.');
     if (!zone) return showFormError('Elige tu zona de entrega.');
@@ -395,6 +409,7 @@
   $('#backToCart').addEventListener('click', () => { step('cart'); renderCart(); });
   $('#fZone').addEventListener('change', renderSummary);
   $('#fTicket')?.addEventListener('input', (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''); });
+  $('#mobileCartOpen')?.addEventListener('click', openCart);
   $('#orderForm').addEventListener('submit', submitOrder);
   $('#orderForm').addEventListener('input', () => showFormError(''));
   document.addEventListener('visibilitychange', () => {
