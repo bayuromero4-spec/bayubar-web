@@ -471,3 +471,29 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
 /* Catálogo: la fotografía ocupa todo el marco de cada tarjeta */
 #grid .card .art{position:relative;display:block;overflow:hidden;padding:0!important}
 #grid .card .art>img.ph{display:block;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center center!important;padding:0!important;margin:0!important}
+
+
+/* CATÁLOGO BAYU BAR · formato de imagen como la referencia móvil */
+#grid .card .art{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1.45 / 1!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:#080d18!important;
+}
+#grid .card .art>img.ph{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  padding:0!important;
+  margin:0!important;
+}
