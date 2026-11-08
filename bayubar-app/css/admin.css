@@ -124,3 +124,47 @@ table.t tr:last-child td{border-bottom:0}
 .toggle{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--text)}
 .toggle input{width:22px;height:22px;accent-color:var(--magenta)}
 @media (max-width:640px){.rowline{grid-template-columns:1fr 1fr}.rowline .field:first-child{grid-column:1/-1}.who{display:none}}
+
+
+/* BAYU BAR · administración: legibilidad y adaptación táctil */
+#view{min-width:0;overflow-wrap:anywhere}
+.panel,.order,.req,.kpi{min-width:0}
+.tools>*{max-width:100%}
+.tscroll{max-width:100%;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+table.t{min-width:620px}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan,#00d9ed);outline-offset:3px}
+@media(max-width:640px){
+ .awrap{padding-left:12px;padding-right:12px}
+ .ahead-in{align-items:flex-start;padding-top:9px;gap:8px}
+ .abrand{gap:8px}
+ .abrand img{width:34px;height:34px}
+ .abrand b{font-size:14px}
+ .ahead-right{gap:6px}
+ .ahead-right .btn{min-height:36px;padding:0 10px;font-size:12px}
+ .tabs{gap:5px;padding-top:8px;padding-bottom:9px}
+ .tab{min-height:40px;padding:0 12px;font-size:13px}
+ #view{padding-top:17px;padding-bottom:90px}
+ .vhead{align-items:flex-start;margin-bottom:15px}
+ .vhead h2{font-size:25px}
+ .tools{width:100%;gap:8px}
+ .tools .field{min-width:min(100%,140px);flex:1 1 140px}
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:14px}
+ .kpi{padding:12px;border-radius:15px}
+ .kpi b{font-size:21px}
+ .panel{padding:14px;border-radius:16px;margin-bottom:12px}
+ .cols{grid-template-columns:minmax(0,1fr);gap:12px}
+ .order{padding:13px;border-radius:16px}
+ .order-top b{font-size:16px}
+ .order-foot .btns{width:100%}
+ .order-foot .btns .btn{flex:1 1 auto}
+ .rowline{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+ .m-head{padding:14px 16px 7px}
+ .m-head h2{font-size:22px}
+ .m-body{padding:8px 16px 12px}
+ .m-foot{padding:12px 16px 16px}
+}
+@media(max-width:380px){
+ .kpis{grid-template-columns:1fr}
+ .ahead-right .btn{padding:0 8px;font-size:11px}
+}
