@@ -1,24 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Moneda dorada BAYU COIN">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 500" fill="none">
 <defs>
- <radialGradient id="gold" cx="35%" cy="25%" r="78%"><stop stop-color="#fff4b5"/><stop offset=".22" stop-color="#f8d879"/><stop offset=".52" stop-color="#c88a28"/><stop offset=".76" stop-color="#f6d36d"/><stop offset="1" stop-color="#805018"/></radialGradient>
- <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0a4"/><stop offset=".28" stop-color="#9a5d16"/><stop offset=".55" stop-color="#ffe18a"/><stop offset="1" stop-color="#7c4814"/></linearGradient>
- <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="13"/></filter>
- <filter id="emboss" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b"/><feSpecularLighting in="b" surfaceScale="4" specularConstant=".8" specularExponent="18" lighting-color="#fff0b0" result="s"><feDistantLight azimuth="225" elevation="55"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="hi"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="hi"/></feMerge></filter>
+ <linearGradient id="g" x1="80" y1="20" x2="500" y2="470" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF1A8"/><stop offset=".18" stop-color="#E9B94F"/><stop offset=".42" stop-color="#A96518"/><stop offset=".63" stop-color="#FFE28B"/><stop offset=".82" stop-color="#C17A22"/><stop offset="1" stop-color="#75410F"/></linearGradient>
+ <linearGradient id="side" x1="300" y1="80" x2="500" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE9A0"/><stop offset=".25" stop-color="#A96519"/><stop offset=".5" stop-color="#F8D36C"/><stop offset=".75" stop-color="#8A4D12"/><stop offset="1" stop-color="#E9B84C"/></linearGradient>
+ <filter id="ds" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="13"/></filter>
+ <g id="coin"><ellipse cx="0" cy="22" rx="132" ry="38" fill="#69400F"/><path d="M-132-8v30c0 21 59 38 132 38s132-17 132-38V-8" fill="url(#side)" stroke="#8A5418" stroke-width="5"/><ellipse cy="-8" rx="132" ry="38" fill="url(#g)" stroke="#FFE6A0" stroke-width="6"/><ellipse cy="-8" rx="113" ry="28" stroke="#96601F" stroke-width="4"/><ellipse cy="-8" rx="102" ry="23" stroke="#FFF0B0" stroke-width="2"/><path d="M-122 5v17m12-18v19m12-20v20m12-21v21m12-22v22m12-23v23m12-23v23m12-24v24m12-24v24m12-24v24m12-24v24m12-24v24m12-24v24m12-23v23m12-23v23m12-22v22m12-21v21m12-20v20m12-19v19m12-18v18m12-17v17" stroke="#75430F" stroke-width="3" opacity=".75"/></g>
 </defs>
-<ellipse cx="300" cy="320" rx="250" ry="250" fill="#000" opacity=".32" filter="url(#shadow)"/>
-<circle cx="300" cy="292" r="263" fill="#59370f" stroke="#f7d77b" stroke-width="8"/>
-<circle cx="300" cy="292" r="250" fill="url(#gold)" stroke="url(#edge)" stroke-width="18"/>
-<circle cx="300" cy="292" r="222" fill="none" stroke="#7f4d17" stroke-width="5"/>
-<circle cx="300" cy="292" r="211" fill="none" stroke="#ffe9a0" stroke-width="3"/>
-<circle cx="300" cy="292" r="185" fill="url(#gold)" stroke="#98601e" stroke-width="5"/>
-<circle cx="300" cy="292" r="174" fill="none" stroke="#fce7a0" stroke-width="3"/>
-<g fill="#7b4a18" font-family="Georgia,serif" font-size="27" letter-spacing="5" text-anchor="middle"><text x="300" y="87">BAYU COIN</text><text x="300" y="507">BAYU COIN</text></g>
-<g transform="translate(300 285)" filter="url(#emboss)" stroke="#8b541b" stroke-width="7" stroke-linejoin="round">
- <path d="M-57 -103v-35q0-25 25-25h64q25 0 25 25v35q0 21 17 38 22 22 22 54v94q0 25-25 25h-142q-25 0-25-25v-94q0-32 22-54 17-17 17-38Z" fill="none"/>
- <path d="M-27 -139h54M-15 -119h30M-35 -38q35 22 70 0" fill="none" stroke-width="9" stroke-linecap="round"/>
- <path d="M-164 18 164 -30" stroke="#8b541b" stroke-width="28" stroke-linecap="round"/>
- <path d="M-164 18 164 -30" stroke="#f4d37c" stroke-width="17" stroke-linecap="round"/>
- <text x="0" y="50" text-anchor="middle" font-family="Arial,sans-serif" font-size="62" font-weight="900" font-style="italic" fill="#f8d77d" stroke="#89531b" stroke-width="2">BAYUBAR</text>
-</g>
-<circle cx="300" cy="292" r="239" fill="none" stroke="#fff1b0" stroke-opacity=".6" stroke-width="3"/>
-</svg>
+<ellipse cx="340" cy="420" rx="240" ry="34" fill="#000" opacity=".35" filter="url(#ds)"/>
+<g transform="translate(370 95)"><use href="#coin"/><use href="#coin" y="58"/><use href="#coin" y="116"/><use href="#coin" y="174"/><use href="#coin" y="232"/></g>
+<g transform="translate(195 292) rotate(-9)">
+ <circle r="166" fill="#70400F" stroke="#FCE49B" stroke-width="9"/>
+ <circle r="157" fill="url(#g)" stroke="#A66B23" stroke-width="9"/>
+ <circle r="139" stroke="#7E4B18" stroke-width="4"/>
+ <circle r="130" stroke="#FFF0B4" stroke-width="3"/>
+ <circle r="111" stroke="#9A5D1B" stroke-width="4"/>
+ <text x="0" y="-117" text-anchor="middle" fill="#86501A" font-family="Georgia,serif" font-size="17" letter-spacing="3">BAYU COIN</text>
+ <text x="0" y="127" text-anchor="middle" fill="#86501A" font-family="Georgia,serif" font-size="17" letter-spacing="3">BAYU COIN</text>
+ <g stroke="#8C5318" stroke-width="5" stroke-linejoin="round" fill="none">
+  <path d="M-30-61v-26q0-20 20-20h20q20 0 20 20v26q0 18 15 32 18 18 18 43v46q0 20-20 20h-86q-20 0-20-20v-46q0-25 18-43 15-14 15-32Z"/>
+  <path d="M-14-95h28M-12-78h24M-25-22q25 15 50 0"/>
+  <path d="M-93 13 93-13" stroke-width="20"/><path d="M-93 13 93-13" stroke="#FBE39B" stroke-width="11"/>
+ </g>
+ <text y="39" text-anchor="middle" fill="#F8D984" stroke="#8C5318" stroke-width="1.5" paint-order="stroke" font-family="Arial,sans-serif" font-size="37" font-weight="900" font-style="italic">BAYUBAR</text>
+</g></svg>
