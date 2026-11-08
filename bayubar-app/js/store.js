@@ -130,17 +130,17 @@
   function categories() {
     const set = [];
     S.products.forEach((p) => { if (!set.includes(p.category)) set.push(p.category); });
-    return (S.products.some(hasPromo) ? ['Ofertas'] : []).concat(set);
+    return set;
   }
   function filtered() {
     const q = norm(S.query.trim());
-    return S.products.filter((p) => (S.cat === 'Todo' || (S.cat === 'Ofertas' ? hasPromo(p) : p.category === S.cat)) && (!q || norm([p.name, p.size, p.category, p.description, p.brand].filter(Boolean).join(' ')).includes(q)));
+    return S.products.filter((p) => (S.cat === 'Todo' || p.category === S.cat) && (!q || norm([p.name, p.size, p.category, p.description, p.brand].filter(Boolean).join(' ')).includes(q)));
   }
   function renderChips() {
     const cats = ['Todo', ...categories()];
     if (!cats.includes(S.cat)) S.cat = 'Todo';
     $('#chips').innerHTML = cats.map((c) => {
-      const n = c === 'Todo' ? S.products.length : c === 'Ofertas' ? S.products.filter(hasPromo).length : S.products.filter((p) => p.category === c).length;
+      const n = c === 'Todo' ? S.products.length : S.products.filter((p) => p.category === c).length;
       return `<button class="chip" type="button" data-cat="${esc(c)}" aria-pressed="${c === S.cat}">${esc(c)} <small>${n}</small></button>`;
     }).join('');
   }
