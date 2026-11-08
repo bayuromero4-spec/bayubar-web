@@ -80,13 +80,7 @@
     <div class="benefit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.8L3 21l1.3-4.4A9 9 0 1 1 21 12Z"/></svg><div><b>Puntos BAYU</b><small>Compra, acumula y canjea</small></div></div>
   </section>
 
-  <section class="wrap home-categories" id="home-categories">
-    <div class="sec-head">
-      <div><p class="overline">Explora por categoría</p><h2 class="dis">Encuentra tu próxima <span class="it">favorita.</span></h2></div>
-      <a class="home-see-all" href="#catalogo">Ver catálogo <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="home-category-grid" id="homeCategoryGrid"></div>
-  </section>
+
 
   <section class="wrap daily-offers" id="dailyOffers" hidden>
     <div class="sec-head">
@@ -97,13 +91,13 @@
   </section>
 
   <section class="wrap home-feature-panels" aria-label="Beneficios BAYU BAR">
-    <a class="home-feature-panel combo-feature" href="#combos" id="comboFeature" hidden>
+    <button class="home-feature-panel combo-feature" type="button" id="comboFeature" aria-haspopup="dialog" aria-controls="combosPromoDialog" hidden>
       <span class="feature-eyebrow">PARA COMPARTIR</span>
       <span class="feature-title">Combos BAYU<br><em>para compartir.</em></span>
       <span class="feature-description">Reúne, brinda y disfruta.</span>
       <span class="feature-art combo-art" aria-hidden="true"><img src="./assets/combos-bayu.svg" alt=""></span>
       <span class="feature-link">Explorar combos →</span>
-    </a>
+    </button>
     <button class="home-feature-panel points-feature" type="button" id="pointsFeature" aria-haspopup="dialog" aria-controls="pointsPromoDialog">
       <span class="feature-eyebrow">PROGRAMA DE FIDELIDAD</span>
       <span class="feature-title">Acumula<br><em>Puntos BAYU.</em></span>
@@ -113,6 +107,20 @@
     </button>
   </section>
 
+
+  <dialog class="gift-promo-dialog points-promo-dialog combos-promo-dialog" id="combosPromoDialog" aria-labelledby="combosPromoTitle">
+    <div class="gift-modal-shell points-modal-shell">
+      <button class="gift-modal-close" type="button" id="combosModalClose" aria-label="Cerrar">×</button>
+      <div class="gift-modal-content">
+        <div class="gift-modal-topline"><span class="gift-modal-kicker">SELECCIÓN ESPECIAL BAYU</span><span class="gift-modal-pill">COMBOS Y OFERTAS</span></div>
+        <h2 id="combosPromoTitle" class="combos-modal-title">Combos BAYU para compartir</h2>
+        <p class="combos-modal-intro">Descubre los combos activos y las ofertas disponibles. Agrégalos directamente a tu pedido.</p>
+        <section class="combos-modal-section" id="modalCombosSection"><h3>Combos activos</h3><div class="grid combo-grid" id="modalComboGrid"></div></section>
+        <section class="combos-modal-section" id="modalOffersSection"><h3>Ofertas disponibles</h3><div class="grid offers-grid" id="modalOffersGrid"></div></section>
+        <p class="combos-modal-empty" id="modalPromosEmpty" hidden>En este momento no hay combos ni ofertas activos. Vuelve pronto para descubrir nuevas promociones.</p>
+      </div>
+    </div>
+  </dialog>
 
   <dialog class="gift-promo-dialog points-promo-dialog" id="pointsPromoDialog" aria-labelledby="pointsPromoTitle">
     <div class="gift-modal-shell points-modal-shell">
