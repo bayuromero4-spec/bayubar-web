@@ -1501,3 +1501,12 @@ main{overflow:clip}.wrap{max-width:1320px}
   .dock{bottom:calc(76px + env(safe-area-inset-bottom));padding-left:14px;padding-right:14px}
   .dockbtn{min-height:52px;font-size:14px}
 }
+
+
+/* BAYU BAR · alternancia limpia entre pedido y regalo */
+#dock[hidden],.gift-float-button[hidden]{display:none!important}
+@media(max-width:760px){
+  /* El pedido aparece algo más abajo, manteniendo libre la navegación inferior. */
+  #dock{bottom:calc(70px + env(safe-area-inset-bottom))!important}
+  .gift-float-button{bottom:calc(82px + env(safe-area-inset-bottom))!important}
+}
