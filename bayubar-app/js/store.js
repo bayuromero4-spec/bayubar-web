@@ -259,11 +259,6 @@
     const promo = activeGiftPromo();
     let trigger = $('#giftFloatButton');
     let dialog = $('#giftPromoDialog');
-    if (!promo) {
-      if (trigger) trigger.remove();
-      if (dialog) dialog.remove();
-      return;
-    }
     if (!trigger) {
       trigger = document.createElement('button');
       trigger.type = 'button';
@@ -287,6 +282,10 @@
       document.body.appendChild(dialog);
       dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
       $('.gift-modal-close', dialog).addEventListener('click', () => dialog.close());
+    }
+    if (!promo) {
+      $('.gift-modal-content', dialog).innerHTML = '<div class="gift-modal-topline"><span class="gift-modal-kicker">BENEFICIOS BAYU</span><span class="gift-modal-pill">REGALO</span></div><h2 id="giftPromoTitle">Tu regalo BAYU</h2><p class="gift-modal-description">En este momento no hay una promoción de regalo activa. Vuelve pronto para descubrir el próximo beneficio.</p>';
+      return;
     }
     const missing = Math.max(0, Number(promo.min_subtotal) - cartSub());
     const unlocked = missing <= 0;
@@ -324,7 +323,7 @@
     const sec = $('#combos'); const has = S.combos.length > 0;
     if (sec) sec.hidden = !has;
     const feature = $('#comboFeature');
-    if (feature) feature.hidden = !has && !S.products.some(hasPromo);
+    if (feature) feature.hidden = false;
     $('#navCombos').hidden = !has && !S.products.some(hasPromo);
     const markup = has ? S.combos.map(comboHtml).join('') : '';
     const mainGrid = $('#comboGrid');
@@ -623,8 +622,10 @@
     skeletons(); renderSettings(); renderBar(false);
     try {
       await load();
+      const catalogSection = $('#catalogo'); if (catalogSection) catalogSection.hidden = false;
       renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBar(false);
     } catch (e) {
+      const catalogSection = $('#catalogo'); if (catalogSection) catalogSection.hidden = false;
       $('#grid').innerHTML = ''; $('#grid').setAttribute('aria-busy', 'false');
       $('#gridMsg').innerHTML = `<div class="msg"><h3 class="dis">No pudimos cargar el catálogo</h3><p>${esc(errMsg(e))}</p><button class="btn" id="retry" type="button">Reintentar</button></div>`;
       $('#retry').addEventListener('click', boot);
