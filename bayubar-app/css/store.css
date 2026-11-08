@@ -383,3 +383,19 @@ body{background:radial-gradient(ellipse at 12% 18%,rgba(0,194,230,.13),transpare
  .gift-visual{min-height:150px}
  .gift-progress-wrap{margin:0 20px 18px;padding:12px 16px}
 }
+
+
+/* BAYU BAR · ritmo vertical unificado entre secciones */
+#delivery{padding-top:clamp(28px,4vw,48px)}
+.story{padding-top:clamp(38px,5vw,58px);padding-bottom:clamp(42px,5vw,60px);gap:28px 48px}
+.bayu-loyalty{padding-top:24px;padding-bottom:20px}
+.catalog{padding-top:clamp(42px,5vw,60px)}
+.combos{padding-top:clamp(42px,5vw,60px)}
+.footer-in{padding-top:30px;gap:18px}
+@media(max-width:760px){
+ #delivery{padding-top:28px}
+ .story{padding-top:38px;padding-bottom:42px;gap:22px}
+ .bayu-loyalty{padding-top:18px;padding-bottom:16px}
+ .catalog,.combos{padding-top:40px}
+ .footer-in{padding-top:26px;gap:16px;padding-bottom:calc(34px + 72px)}
+}
