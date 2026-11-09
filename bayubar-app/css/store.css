@@ -1605,3 +1605,8 @@ img{max-width:100%}
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* Checkout: helper text for the BAYU gift ticket field */
+.field-hint{display:block;margin-top:6px;color:var(--muted,#a9afbd);font-size:.78rem;line-height:1.45}
+#fTicket{text-transform:uppercase;letter-spacing:.06em}
