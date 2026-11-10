@@ -781,7 +781,7 @@
       ['visual_offers_banner', 'Imagen de sección de ofertas', 'Imagen de apoyo para la sección de ofertas del catálogo', '']
     ];
     const visualAssets = isOwner() ? `<section class="panel visual-assets-panel"><div class="visual-panel-heading"><div><h3>Gestión visual de BAYU BAR</h3><p class="sub">Cambia las imágenes de la tienda sin editar código ni volver a publicar.</p></div><span class="status st-aprobado">Solo dueño</span></div>
-      <div class="visual-assets-grid">${visualKeys.map(([key,title,desc,fallback])=>{const url=S[key]||fallback;return `<article class="visual-asset-card"><div class="visual-asset-preview ${url?'':'is-empty'}">${url?`<img src="${esc(url)}" alt="${esc(title)}" loading="lazy">`:'<span>Sin imagen personalizada</span>'}</div><div class="visual-asset-copy"><b>${esc(title)}</b><small>${esc(desc)}</small><label class="btn ghost sm visual-upload-label">Subir imagen<input type="file" accept="image/png,image/jpeg,image/webp" data-visual-upload="${key}" hidden></label><small class="hint">PNG, JPG o WebP · Se optimiza automáticamente.</small></div></article>`}).join('')}</div>
+      <div class="visual-assets-grid">${visualKeys.map(([key,title,desc,fallback])=>{const url=S[key]||fallback;return `<article class="visual-asset-card"><div class="visual-asset-preview ${url?'':'is-empty'}">${url?`<img src="${esc(url)}" alt="${esc(title)}" loading="lazy">`:'<span>Sin imagen personalizada</span>'}</div><div class="visual-asset-copy"><b>${esc(title)}</b><small>${esc(desc)}</small><div class="visual-asset-actions"><label class="btn ghost sm visual-upload-label">Subir imagen<input type="file" accept="image/png,image/jpeg,image/webp" data-visual-upload="${key}" hidden></label>${S[key] ? `<button class="btn ghost sm" type="button" data-visual-reset="${key}">Restaurar original</button>` : ""}</div><small class="hint">PNG, JPG o WebP · Se optimiza automáticamente.</small></div></article>`}).join('')}</div>
       <p class="hint">Las imágenes se guardan en Supabase Storage. Para productos y combos, usa Editar en cada ficha del catálogo.</p></section>` : '';
 
     const audit = isOwner() ? await q(sb.from('audit_log').select('*').order('id', { ascending: false }).limit(60)) : [];
@@ -983,6 +983,21 @@
       A.f.rep.from = f; A.f.rep.to = t; return show('reportes', true);
     }
     const b = e.target.closest('[data-act]'); if (b && ACT[b.dataset.act]) ACT[b.dataset.act](b);
+  });
+
+  $('#view').addEventListener('click', async (e) => {
+    const reset = e.target.closest('[data-visual-reset]');
+    if (!reset) return;
+    if (!isOwner()) { toast('Solo el dueño puede cambiar estas imágenes.', 'err'); return; }
+    const key = reset.dataset.visualReset;
+    reset.disabled = true;
+    try {
+      const { error } = await sb.rpc('save_storefront_asset', { p_key: key, p_url: null });
+      if (error) throw error;
+      toast('Se restauró la imagen original.', 'ok');
+      await loadCore(); await show('ajustes', true);
+    } catch (err) { toast(errMsg(err), 'err'); }
+    finally { reset.disabled = false; }
   });
 
   $('#view').addEventListener('change', async (e) => {
