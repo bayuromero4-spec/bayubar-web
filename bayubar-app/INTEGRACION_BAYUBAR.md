@@ -29,3 +29,17 @@
 - WhatsApp se abre manualmente desde el dispositivo; no se simula envío automático.
 - No se ha realizado un pedido de producción de prueba ni se ha confirmado un despliegue de Cloudflare en esta entrega.
 - No ejecutar `supabase/schema.sql` ni `00_limpiar_tablas_antiguas.sql` en la base de producción.
+
+## Optimización visual y gestión de imágenes (2026-11-10)
+- Se creó la rama de respaldo `backup/antes-optimizacion-2026-11-09` desde el commit anterior a estos cambios.
+- La tienda ajusta el ancho y la retícula para escritorio, mantiene columnas adaptables en laptop/tablet/celular y presenta las imágenes de producto completas con `object-fit: contain`.
+- La ficha de producto usa una composición premium y restaura la posición de scroll al cerrarse.
+- En Administración → Ajustes → Gestión visual de BAYU BAR, el dueño puede subir banners de ofertas/combos, BAYU COIN y sección de ofertas. Se optimizan a WebP/JPG y se guardan en el bucket público `productos`.
+- Las fotos de productos y combos siguen siendo editables desde sus fichas. Se agregó vista previa inmediata y presentación sin recorte en el panel.
+- La función `save_storefront_asset` permite guardar solo las tres claves visuales permitidas y exige sesión de dueño. Los enlaces se exponen a la tienda mediante `settings.is_public=true`.
+- La migración `20261109_bayubar_visual_asset_management.sql` fue aplicada en Supabase y versionada en este repositorio.
+- Para mejores resultados en fotos de productos, usar PNG/WebP con fondo transparente y botella completa dentro del lienzo. La web no elimina fondos que ya estén incrustados en la fotografía.
+
+- El dueño también puede usar **Restaurar original** para quitar una imagen personalizada de banner y volver al recurso gráfico de BAYU BAR.
+- La función de guardado permite URL nula únicamente para restaurar el valor original; la autorización sigue limitada al dueño.
+- La migración complementaria `20261110_bayubar_visual_asset_reset.sql` fue aplicada en Supabase y versionada.

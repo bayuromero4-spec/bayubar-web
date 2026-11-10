@@ -204,6 +204,15 @@
     finally { btn.disabled = false; btn.textContent = label; }
   });
   $('#modalBody').addEventListener('input', () => { $('#modalError').hidden = true; });
+  $('#modalBody').addEventListener('change', (e) => {
+    const input = e.target;
+    if (!input.matches('#pFile,#cFile') || !input.files || !input.files[0]) return;
+    const thumb = input.id === 'pFile' ? $('#pThumb') : $('#modalBody .imgbox .thumb');
+    if (!thumb) return;
+    const url = URL.createObjectURL(input.files[0]);
+    thumb.innerHTML = `<img src="${url}" alt="Vista previa" style="width:100%;height:100%;object-fit:contain;background:#080d18">`;
+  });
+
   $('#modalCancel').addEventListener('click', () => modal.close());
   $('#modalX').addEventListener('click', () => modal.close());
   function confirmBox({ title, text, ok, danger, field }) {
@@ -299,10 +308,10 @@
   };
 
   // reducir y subir foto
-  async function shrinkImage(file) {
+  async function shrinkImage(file, maxSize = 900) {
     if (!/^image\//.test(file.type)) throw new Error('El archivo debe ser una imagen.');
     const bmp = await createImageBitmap(file).catch(() => { throw new Error('No se pudo leer la imagen. Prueba con JPG o PNG.'); });
-    const max = 900; const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const max = maxSize; const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
     const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
     c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
     let blob = await new Promise((r) => c.toBlob(r, 'image/webp', 0.82));
@@ -310,8 +319,8 @@
     if (!blob) throw new Error('No se pudo procesar la imagen.');
     return blob;
   }
-  async function uploadImage(file) {
-    const blob = await shrinkImage(file);
+  async function uploadImage(file, maxSize = 900) {
+    const blob = await shrinkImage(file, maxSize);
     const ext = blob.type === 'image/webp' ? 'webp' : 'jpg';
     const path = `${crypto.randomUUID()}.${ext}`;
     const { error } = await sb.storage.from('productos').upload(path, blob, { contentType: blob.type, cacheControl: '31536000', upsert: false });
@@ -334,12 +343,12 @@
         <label class="field">Avisar cuando queden<input id="pMin" type="number" inputmode="numeric" min="0" step="1" value="${p ? p.min_stock : 3}"></label></div>
         <label class="field">Descripción (opcional)<textarea id="pDesc" maxlength="300">${esc(p ? p.description || '' : '')}</textarea></label>
         <div class="field">Foto
-          <div class="imgbox"><span class="thumb" id="pThumb">${imageUrl ? `<img src="${esc(imageUrl)}" alt="" width="84" height="84" style="width:100%;height:100%;object-fit:cover">` : 'Sin foto'}</span>
+          <div class="imgbox"><span class="thumb" id="pThumb">${imageUrl ? `<img src="${esc(imageUrl)}" alt="" width="84" height="84" style="width:100%;height:100%;object-fit:contain;background:#080d18">` : 'Sin foto'}</span>
           <div><input id="pFile" type="file" accept="image/*"><span class="hint" id="pFileHint">Se reduce automáticamente para que la tienda cargue rápido.</span></div></div></div>
         ${isNew ? '' : ''}`,
       submit: async () => {
         const fileEl = $('#pFile');
-        if (fileEl.files[0]) { $('#pFileHint').textContent = 'Subiendo foto…'; imageUrl = await uploadImage(fileEl.files[0]); }
+        if (fileEl.files[0]) { $('#pFileHint').textContent = 'Subiendo foto…'; imageUrl = await uploadImage(fileEl.files[0], 1200); }
         const name = $('#pName').value.trim(); const price = Number($('#pPrice').value); const cost = $('#pCost').value === '' ? 0 : Number($('#pCost').value);
         const min = $('#pMin').value === '' ? 3 : Number($('#pMin').value);
         if (name.length < 2) throw new Error('Escribe el nombre del producto.');
@@ -766,10 +775,20 @@
   // =================================================================== AJUSTES
   VIEW.ajustes = async function () {
     const S = A.d.settings; const free = S.free_delivery_enabled === true;
+    const visualKeys = [
+      ['visual_combo_banner', 'Banner de ofertas y combos', 'Imagen principal del bloque de promociones', './assets/combos-bayu.svg'],
+      ['visual_points_banner', 'Banner de BAYU COIN', 'Imagen principal del programa de puntos', './assets/bayu-coin.svg'],
+      ['visual_offers_banner', 'Imagen de sección de ofertas', 'Imagen de apoyo para la sección de ofertas del catálogo', '']
+    ];
+    const visualAssets = isOwner() ? `<section class="panel visual-assets-panel"><div class="visual-panel-heading"><div><h3>Gestión visual de BAYU BAR</h3><p class="sub">Cambia las imágenes de la tienda sin editar código ni volver a publicar.</p></div><span class="status st-aprobado">Solo dueño</span></div>
+      <div class="visual-assets-grid">${visualKeys.map(([key,title,desc,fallback])=>{const url=S[key]||fallback;return `<article class="visual-asset-card"><div class="visual-asset-preview ${url?'':'is-empty'}">${url?`<img src="${esc(url)}" alt="${esc(title)}" loading="lazy">`:'<span>Sin imagen personalizada</span>'}</div><div class="visual-asset-copy"><b>${esc(title)}</b><small>${esc(desc)}</small><div class="visual-asset-actions"><label class="btn ghost sm visual-upload-label">Subir imagen<input type="file" accept="image/png,image/jpeg,image/webp" data-visual-upload="${key}" hidden></label>${S[key] ? `<button class="btn ghost sm" type="button" data-visual-reset="${key}">Restaurar original</button>` : ""}</div><small class="hint">PNG, JPG o WebP · Se optimiza automáticamente.</small></div></article>`}).join('')}</div>
+      <p class="hint">Las imágenes se guardan en Supabase Storage. Para productos y combos, usa Editar en cada ficha del catálogo.</p></section>` : '';
+
     const audit = isOwner() ? await q(sb.from('audit_log').select('*').order('id', { ascending: false }).limit(60)) : [];
     const ns = isOwner() ? await sb.rpc('get_notify_status').then((r) => r.data || {}, () => ({})) : {};
     const ps = await pushState();
     return `<div class="vhead"><div><h2 class="dis">Ajustes</h2></div></div>
+      ${visualAssets}
       <section class="panel"><h3>Delivery</h3>
         <div class="item"><div class="main"><b>Delivery gratis</b><small>${free ? `Activado${num(S.free_delivery_min) > 0 ? ' para pedidos desde ' + money(S.free_delivery_min) : ' para todos los pedidos'}` : 'Desactivado: se cobra la tarifa de cada zona'}</small></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" type="button" data-act="freetoggle">${free ? 'Desactivar' : 'Activar'}</button><button class="btn ghost sm" type="button" data-act="freemin">Monto mínimo</button></div></div>
@@ -964,6 +983,39 @@
       A.f.rep.from = f; A.f.rep.to = t; return show('reportes', true);
     }
     const b = e.target.closest('[data-act]'); if (b && ACT[b.dataset.act]) ACT[b.dataset.act](b);
+  });
+
+  $('#view').addEventListener('click', async (e) => {
+    const reset = e.target.closest('[data-visual-reset]');
+    if (!reset) return;
+    if (!isOwner()) { toast('Solo el dueño puede cambiar estas imágenes.', 'err'); return; }
+    const key = reset.dataset.visualReset;
+    reset.disabled = true;
+    try {
+      const { error } = await sb.rpc('save_storefront_asset', { p_key: key, p_url: null });
+      if (error) throw error;
+      toast('Se restauró la imagen original.', 'ok');
+      await loadCore(); await show('ajustes', true);
+    } catch (err) { toast(errMsg(err), 'err'); }
+    finally { reset.disabled = false; }
+  });
+
+  $('#view').addEventListener('change', async (e) => {
+    const input = e.target.closest('[data-visual-upload]');
+    if (!input || !input.files || !input.files[0]) return;
+    if (!isOwner()) { toast('Solo el dueño puede cambiar estas imágenes.', 'err'); input.value = ''; return; }
+    const key = input.dataset.visualUpload;
+    const labels = { visual_combo_banner: 'Banner de ofertas y combos', visual_points_banner: 'Banner de BAYU COIN', visual_offers_banner: 'Imagen de ofertas' };
+    const file = input.files[0]; input.disabled = true;
+    try {
+      if (!/^image\/(png|jpeg|webp)$/.test(file.type)) throw new Error('Usa una imagen PNG, JPG o WebP.');
+      const url = await uploadImage(file, 1600);
+      const { error } = await sb.rpc('save_storefront_asset', { p_key: key, p_url: url });
+      if (error) throw error;
+      toast('Imagen actualizada: ' + labels[key], 'ok');
+      await loadCore(); await show('ajustes', true);
+    } catch (err) { toast(errMsg(err), 'err'); }
+    finally { input.disabled = false; input.value = ''; }
   });
 
   // =================================================================== arranque
