@@ -162,6 +162,26 @@
   }
   function byId2(list, id) { return list.find((p) => p.id === id); }
 
+  function renderVisualAssets() {
+    const combo = $('#comboFeature .combo-art img');
+    const points = $('#pointsFeature .points-art img');
+    const comboUrl = safeUrl(S.settings.visual_combo_banner);
+    const pointsUrl = safeUrl(S.settings.visual_points_banner);
+    const offersUrl = safeUrl(S.settings.visual_offers_banner);
+    if (combo) combo.src = comboUrl || './assets/combos-bayu.svg';
+    if (points) points.src = pointsUrl || './assets/bayu-coin.svg';
+    const offers = $('#dailyOffers');
+    if (offers) {
+      if (offersUrl) {
+        offers.style.setProperty('--offers-banner-image', 'url("' + offersUrl.replace(/["\\\\]/g, '') + '")');
+        offers.classList.add('has-custom-visual');
+      } else {
+        offers.style.removeProperty('--offers-banner-image');
+        offers.classList.remove('has-custom-visual');
+      }
+    }
+  }
+
   // ------------------------------------------------------------ render: catálogo
   function categories() {
     const set = [];
@@ -554,6 +574,7 @@
   document.body.appendChild(productDlg);
   function openProduct(product) {
     if (!product) return;
+    if (!productDlg.open) window.__bayuProductScrollY = window.scrollY || window.pageYOffset || 0;
     const promo = hasPromo(product);
     const price = promo ? money(product.promo_price) : money(product.price);
     const max = maxQty(product);
@@ -572,7 +593,13 @@
     if (!productDlg.open) showLockedDialog(productDlg);
   }
   productDlg.addEventListener('click', (e) => { if (e.target === productDlg || e.target.closest('.product-modal-close')) productDlg.close(); });
-  productDlg.addEventListener('close', () => { $('.product-modal-content', productDlg).innerHTML = ''; });
+  productDlg.addEventListener('close', () => {
+    $('.product-modal-content', productDlg).innerHTML = '';
+    const y = Number.isFinite(window.__bayuProductScrollY) ? window.__bayuProductScrollY : (window.__bayuModalScrollY || 0);
+    const root = document.documentElement; const oldBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    requestAnimationFrame(() => { window.scrollTo(0, y); requestAnimationFrame(() => { window.scrollTo(0, y); root.style.scrollBehavior = oldBehavior; }); });
+  });
 
   // ------------------------------------------------------------ eventos
   document.addEventListener('click', (e) => {
@@ -635,7 +662,7 @@
     try {
       await load();
       const catalogSection = $('#catalogo'); if (catalogSection) catalogSection.hidden = false;
-      renderSettings(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBar(false);
+      renderSettings(); renderVisualAssets(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBar(false);
     } catch (e) {
       const catalogSection = $('#catalogo'); if (catalogSection) catalogSection.hidden = false;
       $('#grid').innerHTML = ''; $('#grid').setAttribute('aria-busy', 'false');
