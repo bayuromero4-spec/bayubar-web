@@ -12,7 +12,11 @@ begin
   if p_key not in ('visual_combo_banner','visual_points_banner','visual_offers_banner') then
     raise exception 'Destino de imagen no válido.';
   end if;
-  if p_url is null or length(p_url) > 2048 or p_url !~ '^https://[A-Za-z0-9.-]+/' then
+  if p_url is null or p_url = '' then
+    delete from public.settings where key = p_key;
+    return jsonb_build_object('ok',true,'key',p_key,'reset',true);
+  end if;
+  if length(p_url) > 2048 or p_url !~ '^https://[A-Za-z0-9.-]+/' then
     raise exception 'La dirección de la imagen no es válida.';
   end if;
   insert into public.settings(key,value,is_public,updated_at)
