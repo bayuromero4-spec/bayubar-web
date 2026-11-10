@@ -183,3 +183,5 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .visual-upload-label{position:relative;cursor:pointer}
 .visual-upload-label input{display:none}
 @media(max-width:680px){.visual-assets-grid{grid-template-columns:1fr}.visual-asset-preview{height:125px}.visual-panel-heading{align-items:flex-start;flex-direction:column}}
+
+.visual-asset-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
