@@ -528,7 +528,7 @@
       $('#doneWa').href = waLink(text);
       step('done');
       renderBar(false);
-      load().then(() => { renderChips(); renderGrid(); renderCombos(); renderHomeCategories(); renderOffers(); }).catch(() => {});   // refresca el stock
+      load().then(() => { renderVisualAssets(); renderChips(); renderGrid(); renderCombos(); renderHomeCategories(); renderOffers(); }).catch(() => {});   // refresca el stock
     } catch (e) {
       showFormError(errMsg(e));
       load().then(() => { renderChips(); renderGrid(); renderCombos(); renderSummary(); }).catch(() => {});
