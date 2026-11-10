@@ -39,3 +39,7 @@
 - La función `save_storefront_asset` permite guardar solo las tres claves visuales permitidas y exige sesión de dueño. Los enlaces se exponen a la tienda mediante `settings.is_public=true`.
 - La migración `20261109_bayubar_visual_asset_management.sql` fue aplicada en Supabase y versionada en este repositorio.
 - Para mejores resultados en fotos de productos, usar PNG/WebP con fondo transparente y botella completa dentro del lienzo. La web no elimina fondos que ya estén incrustados en la fotografía.
+
+- El dueño también puede usar **Restaurar original** para quitar una imagen personalizada de banner y volver al recurso gráfico de BAYU BAR.
+- La función de guardado permite URL nula únicamente para restaurar el valor original; la autorización sigue limitada al dueño.
+- La migración complementaria `20261110_bayubar_visual_asset_reset.sql` fue aplicada en Supabase y versionada.
