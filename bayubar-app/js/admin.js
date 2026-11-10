@@ -204,6 +204,15 @@
     finally { btn.disabled = false; btn.textContent = label; }
   });
   $('#modalBody').addEventListener('input', () => { $('#modalError').hidden = true; });
+  $('#modalBody').addEventListener('change', (e) => {
+    const input = e.target;
+    if (!input.matches('#pFile,#cFile') || !input.files || !input.files[0]) return;
+    const thumb = input.id === 'pFile' ? $('#pThumb') : $('#modalBody .imgbox .thumb');
+    if (!thumb) return;
+    const url = URL.createObjectURL(input.files[0]);
+    thumb.innerHTML = `<img src="${url}" alt="Vista previa" style="width:100%;height:100%;object-fit:contain;background:#080d18">`;
+  });
+
   $('#modalCancel').addEventListener('click', () => modal.close());
   $('#modalX').addEventListener('click', () => modal.close());
   function confirmBox({ title, text, ok, danger, field }) {
@@ -334,12 +343,12 @@
         <label class="field">Avisar cuando queden<input id="pMin" type="number" inputmode="numeric" min="0" step="1" value="${p ? p.min_stock : 3}"></label></div>
         <label class="field">Descripción (opcional)<textarea id="pDesc" maxlength="300">${esc(p ? p.description || '' : '')}</textarea></label>
         <div class="field">Foto
-          <div class="imgbox"><span class="thumb" id="pThumb">${imageUrl ? `<img src="${esc(imageUrl)}" alt="" width="84" height="84" style="width:100%;height:100%;object-fit:cover">` : 'Sin foto'}</span>
+          <div class="imgbox"><span class="thumb" id="pThumb">${imageUrl ? `<img src="${esc(imageUrl)}" alt="" width="84" height="84" style="width:100%;height:100%;object-fit:contain;background:#080d18">` : 'Sin foto'}</span>
           <div><input id="pFile" type="file" accept="image/*"><span class="hint" id="pFileHint">Se reduce automáticamente para que la tienda cargue rápido.</span></div></div></div>
         ${isNew ? '' : ''}`,
       submit: async () => {
         const fileEl = $('#pFile');
-        if (fileEl.files[0]) { $('#pFileHint').textContent = 'Subiendo foto…'; imageUrl = await uploadImage(fileEl.files[0]); }
+        if (fileEl.files[0]) { $('#pFileHint').textContent = 'Subiendo foto…'; imageUrl = await uploadImage(fileEl.files[0], 1200); }
         const name = $('#pName').value.trim(); const price = Number($('#pPrice').value); const cost = $('#pCost').value === '' ? 0 : Number($('#pCost').value);
         const min = $('#pMin').value === '' ? 3 : Number($('#pMin').value);
         if (name.length < 2) throw new Error('Escribe el nombre del producto.');
