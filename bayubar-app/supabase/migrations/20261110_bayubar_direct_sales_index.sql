@@ -1,0 +1,1 @@
+create index if not exists orders_sales_channel_created_idx on public.orders (sales_channel, created_at desc);
