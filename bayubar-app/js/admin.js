@@ -114,7 +114,7 @@
     A.d.settings = {}; settings.forEach((r) => { A.d.settings[r.key] = r.value; });
   }
   const pendingCount = () => (A.d.requests || []).filter((r) => r.status === 'pendiente').length;
-  const newOrders = () => (A.d.orders || []).filter((o) => o.status === 'nuevo').length;
+  const newOrders = () => (A.d.orders || []).filter((o) => (o.sales_channel || 'web') === 'web' && o.status === 'nuevo').length;
 
   async function submit(entity, action, target, payload, summary) {
     const { data, error } = await sb.rpc('submit_change', { p_entity: entity, p_action: action, p_target: target || null, p_payload: payload || {}, p_summary: summary || null });
@@ -135,6 +135,7 @@
   function subscribe() {
     if (A.channel) return;
     A.channel = sb.channel('orders-live').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, async (p) => {
+      if (p.new && p.new.sales_channel && p.new.sales_channel !== 'web') { try { await loadCore(); if (A.view === 'ventas') show('ventas', true); } catch (_) {} return; }
       toast(`Nuevo pedido ${p.new && p.new.number ? p.new.number : ''}`, 'ok'); beep();
       try { await loadCore(); renderTabs(); if (['pedidos', 'resumen', 'inventario'].includes(A.view)) show(A.view, true); } catch (_) { /* se reintenta al navegar */ }
     }).subscribe();
@@ -148,7 +149,7 @@
 
   // =================================================================== navegación
   const VIEWS = [
-    ['resumen', 'Resumen'], ['pedidos', 'Pedidos'], ['productos', 'Productos'], ['promos', 'Combos y promos'], ['inventario', 'Inventario'],
+    ['resumen', 'Resumen'], ['pedidos', 'Pedidos'], ['ventas', 'Ventas directas'], ['productos', 'Productos'], ['promos', 'Combos y promos'], ['inventario', 'Inventario'],
     ['compras', 'Compras'], ['gastos', 'Gastos'], ['clientes', 'Clientes y puntos'], ['marketing', 'Marketing'], ['caja', 'Caja'], ['delivery', 'Repartos'], ['sedes', 'Sedes', true], ['reportes', 'Reportes', true], ['aprobaciones', 'Aprobaciones'], ['ajustes', 'Ajustes']
   ];
   function renderTabs() {
@@ -199,7 +200,7 @@
     ev.preventDefault(); if (!modalSubmit) return;
     const btn = $('#modalOk'); const label = btn.textContent;
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; $('#modalError').hidden = true;
-    try { await modalSubmit(); modal.close(); await reload(); }
+    try { const result = await modalSubmit(); modal.close(); await reload(); if (result && result.ticket) showTicket(result.ticket); }
     catch (e) { const b = $('#modalError'); b.textContent = errMsg(e); b.hidden = false; b.scrollIntoView({ block: 'nearest' }); }
     finally { btn.disabled = false; btn.textContent = label; }
   });
@@ -260,7 +261,7 @@
 
   // =================================================================== PEDIDOS
   VIEW.pedidos = async function () {
-    const O = A.d.orders; const f = A.f.orders;
+    const O = A.d.orders.filter(o => (o.sales_channel || 'web') === 'web'); const f = A.f.orders;
     const groups = { activos: ['nuevo', 'confirmado', 'en_camino'], entregados: ['entregado'], cancelados: ['cancelado'] };
     const list = f === 'todos' ? O : O.filter((o) => groups[f].includes(o.status));
     const chip = (k, label) => `<button class="chip" type="button" data-orderf="${k}" aria-pressed="${f === k}">${label} (${k === 'todos' ? O.length : O.filter((o) => groups[k].includes(o.status)).length})</button>`;
@@ -451,6 +452,112 @@
     $('#cAdd').addEventListener('click', () => { $('#cRows').insertAdjacentHTML('beforeend', rowHtml()); recalc(); });
     recalc();
   }
+
+
+  // =================================================================== VENTAS DIRECTAS
+  function saleRowHtml() {
+    const products = (A.d.products || []).filter(p => p.active);
+    const combos = (A.d.combos || []).filter(c => c.active && (c.combo_items || []).length);
+    const options = [
+      products.length ? `<optgroup label="Productos">${products.map(p=>`<option value="p:${esc(p.id)}" data-price="${num(p.promo_price && (!p.promo_until || p.promo_until >= todayLima()) ? p.promo_price : p.price)}">${esc(p.name)}${p.size?' · '+esc(p.size):''} · ${money(p.promo_price && (!p.promo_until || p.promo_until >= todayLima()) ? p.promo_price : p.price)}</option>`).join('')}</optgroup>` : '',
+      combos.length ? `<optgroup label="Combos">${combos.map(x=>`<option value="c:${esc(x.id)}" data-price="${num(x.price)}">${esc(x.name)} · ${money(x.price)}</option>`).join('')}</optgroup>` : ''
+    ].join('');
+    return `<div class="rowline sale-row">
+      <label class="field">Producto / combo<select class="sale-item" required>${options || '<option value="">No hay productos disponibles</option>'}</select></label>
+      <label class="field">Cantidad<input class="sale-qty" type="number" inputmode="numeric" min="1" max="99" step="1" value="1" required></label>
+      <button class="xbtn sale-remove" type="button" data-act="saleremove" aria-label="Quitar producto">×</button>
+    </div>`;
+  }
+  function saleTotal() {
+    const total = $('#saleRows .sale-row').reduce((sum,row)=>{
+      const opt=$('.sale-item',row)?.selectedOptions?.[0];
+      return sum + num(opt?.dataset.price) * num($('.sale-qty',row)?.value);
+    },0);
+    const out=$('#saleTotal'); if(out) out.textContent=money(total);
+  }
+  function ticketChannel(channel) {
+    return ({presencial:'Presencial',verbal:'Verbal / teléfono',whatsapp:'WhatsApp'})[channel] || 'Venta directa';
+  }
+  function ticketMarkup(t) {
+    const items=t.items || [];
+    return `<article class="ticket-paper">
+      <header class="ticket-brand"><img src="./assets/logo-bayubar-sm.webp" alt="BAYU BAR"><b>BAYU BAR</b><small>BEBIDAS · DELIVERY · EXPERIENCIAS</small></header>
+      <div class="ticket-rule"></div>
+      <h3>TICKET DE COMPRA</h3><strong class="ticket-number">${esc(t.number)}</strong>
+      <small class="ticket-date">${esc(fmtDateTime(t.created_at))}</small>
+      <div class="ticket-rule"></div>
+      <div class="ticket-meta"><span>Cliente</span><b>${esc(t.customer_name || 'Público general')}</b><span>Celular</span><b>${esc(t.phone || 'No registrado')}</b><span>Origen</span><b>${esc(ticketChannel(t.sales_channel))}</b><span>Pago</span><b>${esc(t.payment)}</b></div>
+      <div class="ticket-rule"></div>
+      <div class="ticket-items"><div class="ticket-item ticket-item-head"><b>Descripción</b><b>Importe</b></div>
+      ${items.map(i=>`<div class="ticket-item"><span>${num(i.qty)} × ${esc(i.product_name)}${i.is_gift?' · REGALO':''}<small>${money(i.unit_price)} c/u</small></span><b>${i.is_gift?'GRATIS':money(num(i.qty)*num(i.unit_price))}</b></div>`).join('')}</div>
+      <div class="ticket-rule"></div>
+      <div class="ticket-grand"><span>TOTAL</span><b>${money(t.total)}</b></div>
+      ${t.note?`<p class="ticket-note">Nota: ${esc(t.note)}</p>`:''}
+      <div class="ticket-rule"></div><strong class="ticket-thanks">¡GRACIAS POR TU COMPRA!</strong>
+      <small class="ticket-disclaimer">Comprobante interno de venta. No es una boleta electrónica tributaria.</small>
+    </article>`;
+  }
+  let currentTicket = null;
+  const ticketDialog = $('#ticketDialog');
+  function showTicket(t) {
+    currentTicket=t; $('#ticketContent').innerHTML=ticketMarkup(t);
+    const wa=$('#ticketWhatsApp');
+    if(t.phone){const lines=(t.items||[]).map(i=>`• ${i.qty} × ${i.product_name}: ${i.is_gift?'Gratis':money(i.qty*i.unit_price)}`).join('\n');
+      wa.href=waUrl(t.phone,`Hola ${t.customer_name || 'cliente'}, gracias por tu compra en BAYU BAR.\nTicket ${t.number}\n${lines}\nTOTAL: ${money(t.total)}\nPago: ${t.payment}`);
+      wa.hidden=false;
+    }else{wa.hidden=true;}
+    if(!ticketDialog.open) ticketDialog.showModal();
+  }
+  function printTicket(t) {
+    if(!t) return;
+    const w=window.open('','_blank','width=420,height=720');
+    if(!w){toast('Permite las ventanas emergentes para imprimir el ticket.','err');return;}
+    const content=ticketMarkup(t);
+    w.document.open();
+    w.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${esc(t.number)} · BAYU BAR</title><style>
+      @page{size:80mm auto;margin:4mm}
+      *{box-sizing:border-box}body{margin:0;background:#fff;color:#111827;font:12px/1.45 Arial,sans-serif}
+      .ticket-paper{width:72mm;max-width:100%;margin:0 auto;padding:2mm 0}
+      .ticket-brand{text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
+      .ticket-brand img{width:42px;height:42px;object-fit:contain}.ticket-brand b{font-size:20px;letter-spacing:2px}
+      .ticket-brand small,.ticket-date,.ticket-disclaimer{font-size:9px;color:#555}
+      .ticket-rule{border-top:1px dashed #888;margin:10px 0}
+      h3{text-align:center;font-size:14px;margin:8px 0 2px}.ticket-number{display:block;text-align:center;font-size:17px;letter-spacing:1px}
+      .ticket-date{display:block;text-align:center;margin-top:2px}
+      .ticket-meta{display:grid;grid-template-columns:1fr 1.2fr;gap:4px;font-size:10px}.ticket-meta span{color:#555}
+      .ticket-meta b{text-align:right;overflow-wrap:anywhere}
+      .ticket-item{display:flex;justify-content:space-between;gap:8px;margin:7px 0;font-size:10px}
+      .ticket-item span{max-width:48mm}.ticket-item small{display:block;color:#666;font-size:9px}
+      .ticket-item-head{font-size:9px;color:#555;text-transform:uppercase}
+      .ticket-grand{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:15px}
+      .ticket-note{font-size:10px}.ticket-thanks{display:block;text-align:center;margin:12px 0 6px;font-size:12px}
+      .ticket-disclaimer{display:block;text-align:center;line-height:1.3}
+      @media screen{body{padding:14px;background:#eef0f4}.ticket-paper{background:white;padding:14px;box-shadow:0 2px 14px #0002}}
+    </style></head><body>${content}</body></html>`);
+    w.document.close();w.focus();w.print();
+  }
+  VIEW.ventas = async function () {
+    const sales=await q(sb.from('orders').select('*, order_items(*)').neq('sales_channel','web').order('created_at',{ascending:false}).limit(60));
+    A.d.sales=sales;
+    const today=sales.filter(o=>new Date(o.created_at).toLocaleDateString('en-CA',{timeZone:'America/Lima'})===todayLima());
+    const todayTotal=today.reduce((s,o)=>s+num(o.total),0);
+    const activeProducts=(A.d.products||[]).filter(p=>p.active).length+(A.d.combos||[]).filter(c=>c.active).length;
+    return `<div class="vhead"><div><h2 class="dis">Ventas directas</h2><p class="sub">Registra compras presenciales, verbales o recibidas por WhatsApp sin crear un pedido web.</p></div></div>
+      <div class="kpis"><div class="kpi"><span>Ventas directas de hoy</span><b class="num">${today.length}</b></div><div class="kpi"><span>Ingresos directos de hoy</span><b class="num">${money(todayTotal)}</b></div><div class="kpi"><span>Productos y combos activos</span><b class="num">${activeProducts}</b></div></div>
+      <section class="panel sale-register"><div class="sale-panel-head"><div><h3>Registrar nueva venta</h3><p class="sub">El stock se descuenta al confirmar y se genera un ticket correlativo.</p></div><span class="status st-aprobado">Registro inmediato</span></div>
+        <div class="grid2"><label class="field">Cliente (opcional)<input id="saleCustomer" maxlength="80" placeholder="Público general"></label><label class="field">Celular (opcional)<input id="salePhone" inputmode="tel" maxlength="16" placeholder="9XXXXXXXX"></label></div>
+        <div class="grid2"><label class="field">Origen de la venta<select id="saleChannel"><option value="presencial">Presencial</option><option value="verbal">Verbal / teléfono</option><option value="whatsapp">WhatsApp</option></select></label><label class="field">Método de pago<select id="salePayment"><option value="Efectivo">Efectivo</option><option value="Yape">Yape</option><option value="Plin">Plin</option></select></label></div>
+        <div class="sale-lines-head"><b>Productos</b><span class="hint">Precios vigentes del catálogo</span></div>
+        <div id="saleRows">${saleRowHtml()}</div>
+        <button class="btn ghost sm" type="button" data-act="saleadd">+ Agregar producto</button>
+        <div class="sale-total-row"><span>Total de venta</span><b id="saleTotal">${money(0)}</b></div>
+        <label class="field">Nota (opcional)<input id="saleNote" maxlength="300" placeholder="Detalle o referencia de la venta"></label>
+        <div class="sale-actions"><button class="btn" type="button" data-act="salesave">Registrar venta y generar ticket</button></div>
+      </section>
+      <section class="panel"><div class="sale-panel-head"><div><h3>Últimas ventas directas</h3><p class="sub">Se incluyen en los reportes generales, pero se separan de los pedidos web.</p></div><span class="status">${sales.length} registros</span></div>
+      ${sales.length?`<div class="list">${sales.map(o=>`<div class="item sale-history-item"><div class="main"><b>${esc(o.number)} · ${esc(o.customer_name)}</b><small>${esc(fmtDateTime(o.created_at))} · ${esc(ticketChannel(o.sales_channel))} · ${esc(o.payment)}</small><small>${(o.order_items||[]).map(i=>`${i.qty} × ${esc(i.product_name)}`).join(' · ')}</small></div><div class="sale-history-right"><b class="num">${money(o.total)}</b><button class="btn ghost sm" type="button" data-act="saleticket" data-id="${esc(o.id)}">Ver ticket</button></div></div>`).join('')}</div>`:'<p class="empty-state">Todavía no hay ventas directas registradas.</p>'}
+      </section>`;
+  };
 
   // =================================================================== GASTOS
   const EXP_CATS = ['Alquiler', 'Servicios (luz, agua, internet)', 'Sueldos', 'Transporte y delivery', 'Publicidad', 'Mantenimiento', 'Impuestos', 'Otros'];
@@ -735,7 +842,7 @@
 
   // =================================================================== FASE 7 · REPARTOS
   VIEW.delivery = async function () {
-    const orders=A.d.orders.filter(o=>['nuevo','confirmado','en_camino'].includes(o.status));
+    const orders=A.d.orders.filter(o=>(o.sales_channel || 'web')==='web' && ['nuevo','confirmado','en_camino'].includes(o.status));
     const assignments=await q(sb.from('delivery_assignments').select('*').order('assigned_at',{ascending:false}).limit(100));
     return `<div class="vhead"><div><h2 class="dis">Repartos</h2><p class="sub">Asignación de repartidores y control de entrega.</p></div></div>
       <section class="panel"><h3>Pedidos activos</h3>${orders.length?`<div class="list">${orders.map(o=>{const a=assignments.find(x=>x.order_id===o.id);return `<div class="item"><div class="main"><b>${esc(o.number)} · ${esc(o.customer_name)}</b><small>${esc(o.phone)} · ${esc(o.address)} · ${money(o.total)}</small><small>${a?'Repartidor: '+esc(a.courier_name)+' · '+esc(a.delivery_status):'Sin asignar'}</small></div><button class="btn ghost sm" data-act="deliveryassign" data-id="${esc(o.id)}">${a?'Editar asignación':'Asignar'}</button></div>`}).join('')}</div>`:'<p class="empty-state">No hay pedidos activos.</p>'}</section>`;
@@ -836,6 +943,36 @@
 
   // =================================================================== acciones (delegación)
   const ACT = {
+    saleadd: () => { $('#saleRows').insertAdjacentHTML('beforeend',saleRowHtml()); saleTotal(); },
+    saleremove: el => { const row=el.closest('.sale-row'); if(row && $('#saleRows .sale-row').length>1) row.remove(); saleTotal(); },
+    salesave: async el => {
+      const rows=$('#saleRows .sale-row');
+      const items=rows.map(row=>{
+        const value=$('.sale-item',row).value; const qty=Number($('.sale-qty',row).value);
+        if(!value || !Number.isInteger(qty) || qty<1 || qty>99) throw new Error('Revisa los productos y sus cantidades (1 a 99).');
+        return value.startsWith('p:')?{product_id:value.slice(2),qty}:{combo_id:value.slice(2),qty};
+      });
+      if(!items.length) throw new Error('Agrega al menos un producto.');
+      const customer=$('#saleCustomer').value.trim(); const phone=$('#salePhone').value.trim();
+      if(phone && !/^[0-9+\s-]{7,16}$/.test(phone)) throw new Error('Revisa el número de celular.');
+      el.disabled=true; const label=el.textContent; el.textContent='Registrando…';
+      try {
+        const {data,error}=await sb.rpc('register_direct_sale',{
+          p_customer_name:customer || 'Público general',p_phone:phone,
+          p_payment:$('#salePayment').value,p_channel:$('#saleChannel').value,
+          p_note:$('#saleNote').value.trim() || null,p_items:items
+        });
+        if(error) throw error;
+        toast('Venta registrada: '+data.ticket.number,'ok');
+        if($('#salePayment').value==='Efectivo' && !data.cash_recorded) toast('Venta guardada. No había una caja abierta; no se registró movimiento de efectivo.','err');
+        await loadCore(); await show('ventas',true); showTicket(data.ticket);
+      } catch(err) { toast(errMsg(err),'err'); }
+      finally { el.disabled=false; el.textContent=label; }
+    },
+    saleticket: el => {
+      const o=(A.d.sales||[]).find(x=>x.id===el.dataset.id); if(!o) return;
+      showTicket({id:o.id,number:o.number,customer_name:o.customer_name,phone:o.phone,payment:o.payment,sales_channel:o.sales_channel,note:o.note,subtotal:o.subtotal,total:o.total,created_at:o.created_at,items:o.order_items||[]});
+    },
     reload: () => reload(),
     rewardnew: () => openForm({title:'Nueva recompensa',ok:'Guardar',body:`<label class="field">Nombre<input id="rwTitle" required maxlength="80"></label><label class="field">Descripción<textarea id="rwDesc" maxlength="240"></textarea></label><label class="field">Puntos necesarios<input id="rwCost" type="number" min="1" step="1" required></label>`,submit:async()=>{const title=$('#rwTitle').value.trim(),points_cost=Number($('#rwCost').value);if(title.length<3||!Number.isInteger(points_cost)||points_cost<1)throw new Error('Completa nombre y puntos válidos.');const {error}=await sb.from('loyalty_rewards').insert({title,description:$('#rwDesc').value.trim(),points_cost});if(error)throw error;await reload();}}),
     rewardtoggle: async el=>{const {data,error}=await sb.from('loyalty_rewards').select('*').eq('id',el.dataset.id).single();if(error)throw error;const r=await sb.from('loyalty_rewards').update({active:!data.active}).eq('id',data.id);if(r.error)throw r.error;await reload();},
@@ -971,6 +1108,8 @@
       toast(approve ? 'Cambio aprobado y aplicado.' : 'Solicitud rechazada.', 'ok'); await loadCore(); renderTabs(); await reload();
     } catch (e) { toast(errMsg(e), 'err'); await loadCore().catch(() => {}); renderTabs(); await reload(); }
   }
+  $('#view').addEventListener('input', (e) => { if(e.target.closest('.sale-row')) saleTotal(); });
+  $('#view').addEventListener('change', (e) => { if(e.target.closest('.sale-row')) saleTotal(); });
   $('#view').addEventListener('click', (e) => {
     const go = e.target.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
     const of = e.target.closest('[data-orderf]'); if (of) { A.f.orders = of.dataset.orderf; return show('pedidos', true); }
@@ -1000,6 +1139,9 @@
     finally { reset.disabled = false; }
   });
 
+  $('#ticketClose').addEventListener('click',()=>ticketDialog.close());
+  $('#ticketPrint').addEventListener('click',()=>printTicket(currentTicket));
+  ticketDialog.addEventListener('click',e=>{if(e.target===ticketDialog)ticketDialog.close();});
   $('#view').addEventListener('change', async (e) => {
     const input = e.target.closest('[data-visual-upload]');
     if (!input || !input.files || !input.files[0]) return;
