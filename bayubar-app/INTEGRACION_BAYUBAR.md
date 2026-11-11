@@ -56,3 +56,5 @@
 - Cada operación genera ticket interno con código correlativo, cliente, origen, medio de pago, detalle y total. Permite imprimir o guardar PDF y compartir el resumen por WhatsApp.
 - El ticket se identifica expresamente como comprobante interno no tributario; no reemplaza una boleta electrónica SUNAT.
 - La migración `20261110_bayubar_direct_sales_tickets.sql` fue aplicada y versionada. El RPC está disponible para `authenticated` y valida `is_admin()`; no permite ejecución por `anon`.
+
+- Prueba de ejecución del RPC completada con perfiles de dueño y ayudante usando una transacción revertida, sin dejar ventas de prueba ni alterar inventario.
