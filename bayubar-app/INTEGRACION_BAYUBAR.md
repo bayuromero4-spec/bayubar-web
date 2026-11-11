@@ -43,3 +43,18 @@
 - El dueño también puede usar **Restaurar original** para quitar una imagen personalizada de banner y volver al recurso gráfico de BAYU BAR.
 - La función de guardado permite URL nula únicamente para restaurar el valor original; la autorización sigue limitada al dueño.
 - La migración complementaria `20261110_bayubar_visual_asset_reset.sql` fue aplicada en Supabase y versionada.
+
+## Ventas directas y tickets internos (2026-11-10)
+- Respaldo previo: `backup/antes-venta-directa-ticket-2026-11-10`.
+- Nuevo módulo Administración → Ventas directas: permite registrar operaciones presenciales, verbales/teléfono o recibidas por WhatsApp sin pasar por el checkout web.
+- Se pueden añadir productos y combos, cantidades, cliente opcional, celular opcional, método de pago (efectivo, Yape o Plin) y una nota.
+- La operación se registra en `orders` y `order_items` con `sales_channel` distinto de `web`, prefijo correlativo `VD-`, estado entregado y total calculado en base de datos.
+- La función `register_direct_sale` valida administrador, canal, medio de pago, productos activos, combos vigentes y stock; descuenta existencias con movimientos `venta` y hace la operación en una sola transacción.
+- Las ventas directas se incluyen en los reportes existentes, pero se excluyen de Pedidos y Repartos web.
+- Si se registra celular, la venta puede generar BAYU COIN mediante el trigger de fidelización existente. Si el cliente no deja celular, no se crea un cliente genérico ni se le asignan puntos.
+- Los pagos en efectivo se asocian a la sesión de caja abierta, si existe. Si no hay caja abierta, la venta queda registrada y el panel advierte que no se registró el movimiento de efectivo.
+- Cada operación genera ticket interno con código correlativo, cliente, origen, medio de pago, detalle y total. Permite imprimir o guardar PDF y compartir el resumen por WhatsApp.
+- El ticket se identifica expresamente como comprobante interno no tributario; no reemplaza una boleta electrónica SUNAT.
+- La migración `20261110_bayubar_direct_sales_tickets.sql` fue aplicada y versionada. El RPC está disponible para `authenticated` y valida `is_admin()`; no permite ejecución por `anon`.
+
+- Prueba de ejecución del RPC completada con perfiles de dueño y ayudante usando una transacción revertida, sin dejar ventas de prueba ni alterar inventario.
