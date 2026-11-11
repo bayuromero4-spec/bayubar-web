@@ -61,9 +61,15 @@
   </form>
 </dialog>
 
+<dialog id="ticketDialog" class="ticket-dialog" aria-labelledby="ticketTitle">
+  <div class="ticket-dialog-head"><div><h2 id="ticketTitle">Ticket de compra</h2><p>Comprobante interno de venta</p></div><button class="xbtn" id="ticketClose" type="button" aria-label="Cerrar">×</button></div>
+  <div id="ticketContent" class="ticket-content"></div>
+  <div class="ticket-dialog-actions"><button class="btn ghost" id="ticketCloseBottom" type="button">Cerrar</button><a class="btn ok" id="ticketWhatsApp" href="#" target="_blank" rel="noopener" hidden>Compartir por WhatsApp</a><button class="btn" id="ticketPrint" type="button">Imprimir / Guardar PDF</button></div>
+</dialog>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="./js/config.js"></script>
 <script src="./js/common.js"></script>
-<script src="./js/admin.js?v=20261110-visual02"></script>
+<script src="./js/admin.js?v=20261110-direct-sales01"></script>
 </body>
 </html>
