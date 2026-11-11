@@ -514,7 +514,7 @@
     if(!w){toast('Permite las ventanas emergentes para imprimir el ticket.','err');return;}
     const content=ticketMarkup(t);
     w.document.open();
-    w.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${esc(t.number)} · BAYU BAR</title><style>
+    w.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><base href="${location.href.split('#')[0]}"><title>${esc(t.number)} · BAYU BAR</title><style>
       @page{size:80mm auto;margin:4mm}
       *{box-sizing:border-box}body{margin:0;background:#fff;color:#111827;font:12px/1.45 Arial,sans-serif}
       .ticket-paper{width:72mm;max-width:100%;margin:0 auto;padding:2mm 0}
@@ -534,7 +534,7 @@
       .ticket-disclaimer{display:block;text-align:center;line-height:1.3}
       @media screen{body{padding:14px;background:#eef0f4}.ticket-paper{background:white;padding:14px;box-shadow:0 2px 14px #0002}}
     </style></head><body>${content}</body></html>`);
-    w.document.close();w.focus();w.print();
+    w.document.close();w.focus();w.setTimeout(()=>w.print(),250);
   }
   VIEW.ventas = async function () {
     const sales=await q(sb.from('orders').select('*, order_items(*)').neq('sales_channel','web').order('created_at',{ascending:false}).limit(60));
