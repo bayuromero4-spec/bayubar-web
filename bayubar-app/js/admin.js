@@ -946,15 +946,18 @@
     saleadd: () => { $('#saleRows').insertAdjacentHTML('beforeend',saleRowHtml()); saleTotal(); },
     saleremove: el => { const row=el.closest('.sale-row'); if(row && $('#saleRows .sale-row').length>1) row.remove(); saleTotal(); },
     salesave: async el => {
-      const rows=$('#saleRows .sale-row');
-      const items=rows.map(row=>{
-        const value=$('.sale-item',row).value; const qty=Number($('.sale-qty',row).value);
-        if(!value || !Number.isInteger(qty) || qty<1 || qty>99) throw new Error('Revisa los productos y sus cantidades (1 a 99).');
-        return value.startsWith('p:')?{product_id:value.slice(2),qty}:{combo_id:value.slice(2),qty};
-      });
-      if(!items.length) throw new Error('Agrega al menos un producto.');
+      const rows=$$('#saleRows .sale-row');
+      let items;
+      try {
+        items=rows.map(row=>{
+          const value=$('.sale-item',row).value; const qty=Number($('.sale-qty',row).value);
+          if(!value || !Number.isInteger(qty) || qty<1 || qty>99) throw new Error('Revisa los productos y sus cantidades (1 a 99).');
+          return value.startsWith('p:')?{product_id:value.slice(2),qty}:{combo_id:value.slice(2),qty};
+        });
+      } catch(err) { toast(errMsg(err),'err'); return; }
+      if(!items.length) { toast('Agrega al menos un producto.','err'); return; }
       const customer=$('#saleCustomer').value.trim(); const phone=$('#salePhone').value.trim();
-      if(phone && !/^[0-9+\s-]{7,16}$/.test(phone)) throw new Error('Revisa el número de celular.');
+      if(phone && !/^[0-9+\\s-]{7,16}$/.test(phone)) { toast('Revisa el número de celular.','err'); return; }
       el.disabled=true; const label=el.textContent; el.textContent='Registrando…';
       try {
         const {data,error}=await sb.rpc('register_direct_sale',{
@@ -1140,6 +1143,7 @@
   });
 
   $('#ticketClose').addEventListener('click',()=>ticketDialog.close());
+  $('#ticketCloseBottom').addEventListener('click',()=>ticketDialog.close());
   $('#ticketPrint').addEventListener('click',()=>printTicket(currentTicket));
   ticketDialog.addEventListener('click',e=>{if(e.target===ticketDialog)ticketDialog.close();});
   $('#view').addEventListener('change', async (e) => {
