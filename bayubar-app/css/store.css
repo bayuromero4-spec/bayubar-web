@@ -1812,3 +1812,31 @@ img{max-width:100%}
  .whatsapp-float{right:14px;bottom:calc(94px + env(safe-area-inset-bottom));width:56px;height:56px;padding:4px}
 }
 @media(prefers-reduced-motion:reduce){.whatsapp-float{transition:none}}
+
+
+/* Catálogo de premios BAYUCOIN */
+.bay ucoin-catalog-section{padding:clamp(42px,6vw,76px) 0;background:linear-gradient(180deg,rgba(10,13,25,.98),rgba(7,9,17,.98));border-top:1px solid rgba(255,42,150,.18)}
+.bayucoin-catalog-section{padding:clamp(42px,6vw,76px) 0;background:linear-gradient(180deg,rgba(10,13,25,.98),rgba(7,9,17,.98));border-top:1px solid rgba(255,42,150,.18)}
+.bayucoin-catalog-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:26px}
+.bayucoin-catalog-heading h2{font-size:clamp(28px,4vw,42px);line-height:1.05;margin:5px 0 9px}
+.bayucoin-catalog-heading h2 em{font-style:normal;color:#ff2a96}
+.bayucoin-catalog-heading p:not(.overline){color:#aeb9ca;margin:0}
+.bayucoin-catalog-rule{display:flex;flex-direction:column;gap:5px;padding:14px 18px;border:1px solid rgba(0,220,235,.3);border-radius:14px;background:rgba(0,220,235,.06);white-space:nowrap}
+.bayucoin-catalog-rule strong{font-size:18px;color:#fff}
+.bayucoin-catalog-rule small{font-size:9px;letter-spacing:.16em;color:#7ceaf0;font-weight:800}
+.bayucoin-rewards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:16px}
+.bayucoin-reward-card{display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(124,234,240,.16);border-radius:17px;background:linear-gradient(145deg,rgba(24,29,48,.96),rgba(10,13,24,.98));box-shadow:0 12px 28px rgba(0,0,0,.18)}
+.bayucoin-reward-art{display:grid;place-items:center;min-height:104px;background:radial-gradient(circle at 50% 45%,rgba(255,42,150,.17),transparent 68%);font-size:48px;color:#ff4ba7;text-shadow:0 0 22px rgba(255,42,150,.35)}
+.bayucoin-reward-info{padding:15px;display:flex;flex:1;flex-direction:column}
+.bayucoin-reward-info h3{font-size:17px;margin:0 0 5px;color:#f6f7fb}
+.bayucoin-reward-info p{font-size:12px;line-height:1.45;color:#aeb9ca;margin:0 0 15px;min-height:34px}
+.bayucoin-reward-cost{display:flex;align-items:baseline;justify-content:space-between;border-top:1px solid rgba(255,255,255,.09);padding-top:12px}
+.bayucoin-reward-cost strong{font-size:17px;color:#80eaf0}
+.bayucoin-reward-cost span{font-size:9px;letter-spacing:.13em;color:#ff55a9;font-weight:800}
+.bayucoin-reward-action{display:inline-flex;justify-content:center;margin-top:13px;padding:10px 12px;border-radius:999px;background:#ff168f;color:white;font-weight:800;font-size:12px;text-decoration:none}
+.bayucoin-rewards-empty{grid-column:1/-1;display:flex;flex-direction:column;gap:7px;padding:28px;border:1px dashed rgba(124,234,240,.25);border-radius:16px;text-align:center;color:#eef2fa;background:rgba(255,255,255,.025)}
+.bayucoin-rewards-empty span{font-size:13px;color:#aeb9ca}
+.bayucoin-catalog-footnote{font-size:11px;color:#7f8a9d;margin:16px 0 0}
+.points-modal-actions{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.points-modal-secondary{font-size:12px;color:#85eaf0;text-decoration:none;font-weight:700}
+@media(max-width:640px){.bayucoin-catalog-heading{align-items:flex-start;flex-direction:column}.bayucoin-catalog-rule{width:100%;white-space:normal}.bayucoin-rewards-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bayucoin-reward-art{min-height:82px}.bayucoin-reward-info{padding:12px}.bayucoin-reward-info h3{font-size:14px}.bayucoin-reward-cost strong{font-size:14px}.bayucoin-reward-action{font-size:11px;padding:9px 8px}}

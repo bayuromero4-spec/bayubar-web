@@ -134,19 +134,21 @@
         const ps = c.items.map((i) => ({ i, p: byId2(S.products, i.product_id) }));
         return { ...c, regular_price: ps.reduce((t, x) => t + x.i.qty * (x.p ? unitPrice(x.p) : 0), 0), available_units: Math.min(...ps.map((x) => (x.p ? Math.floor(x.p.stock / x.i.qty) : 0))) };
       });
-      S.settings.free_delivery_enabled = true; S.promotions = [];
+      S.settings.free_delivery_enabled = true; S.promotions = []; S.rewards = [];
       $('#demoBanner').hidden = false;
     } else {
-      const [pr, co, zo, se, pm] = await Promise.all([
+      const [pr, co, zo, se, pm, rw] = await Promise.all([
         sb.from('public_products').select('id,name,category,size,description,price,promo_price,promo_until,image_url,available').order('category').order('name'),
         sb.from('public_combos').select('id,name,description,price,image_url,ends_on,items,regular_price,available_units').order('name'),
         sb.from('delivery_zones').select('id,name,fee').eq('active', true).order('fee').order('name'),
         sb.from('settings').select('key,value'),
-        sb.from('public_bayu_promotion').select('*').limit(1)
+        sb.from('public_bayu_promotion').select('*').limit(1),
+        sb.from('loyalty_rewards').select('id,title,description,points_cost,active,max_redemptions,redemptions_count').eq('active', true).order('points_cost')
       ]);
       // El catálogo depende de productos; fallos en datos auxiliares no deben ocultarlo.
       if (pr.error) throw pr.error;
       S.promotions = pm.error ? [] : (pm.data || []);
+      S.rewards = rw.error ? [] : (rw.data || []).filter(r => r.max_redemptions == null || Number(r.redemptions_count || 0) < Number(r.max_redemptions));
       S.products = pr.data || [];
       S.combos = co.error ? [] : (co.data || []);
       S.zones = zo.error ? [] : (zo.data || []);
@@ -542,6 +544,23 @@
     }
   }
 
+  // ------------------------------------------------------------ catálogo de premios BAYUCOIN
+  function renderBayucoinRewards() {
+    const grid = $('#bayucoinRewardsGrid');
+    if (!grid) return;
+    if (!S.rewards || !S.rewards.length) {
+      grid.innerHTML = '<div class="bayucoin-rewards-empty"><b>Estamos preparando los premios.</b><span>Pronto podrás canjear tus BAYUCOIN por snacks, bebidas y sorpresas.</span></div>';
+      return;
+    }
+    const symbols = ['✦','✧','◆','★'];
+    grid.innerHTML = S.rewards.map((r, i) => `<article class="bayucoin-reward-card">
+      <div class="bayucoin-reward-art" aria-hidden="true">${symbols[i % symbols.length]}</div>
+      <div class="bayucoin-reward-info"><h3>${esc(r.title)}</h3><p>${esc(r.description || 'Premio exclusivo BAYU BAR')}</p>
+      <div class="bayucoin-reward-cost"><strong>${Number(r.points_cost)} BAYUCOIN</strong><span>CANJE</span></div>
+      <a class="bayucoin-reward-action" href="${esc(waLink('Hola BAYU BAR, quiero solicitar el canje de ' + r.title + '. ¿Pueden verificar mi saldo y disponibilidad?'))}" target="_blank" rel="noopener">Solicitar canje →</a></div>
+    </article>`).join('');
+  }
+
   // ------------------------------------------------------------ textos dinámicos
   function renderSettings() {
     const free = S.settings.free_delivery_enabled === true;
@@ -550,7 +569,7 @@
     const hello = waLink('Hola BAYU BAR, quiero hacer un pedido.');
     $('#waHero').href = hello; $('#waContact').href = hello;
     const loyalty = $('#loyaltyWhatsApp');
-    if (loyalty) loyalty.href = waLink('Hola BAYU BAR, quiero consultar mi saldo de puntos y las recompensas disponibles. Mi nombre y celular son: ');
+    if (loyalty) loyalty.href = waLink('Hola BAYU BAR, quiero consultar mi saldo de BAYUCOIN y solicitar un canje. Mi nombre y celular son: ');
     let floating = $('#whatsappFloat');
     if (!floating) {
       floating = document.createElement('a');
@@ -647,6 +666,7 @@
   const pointsDialog = $('#pointsPromoDialog');
   $('#pointsFeature')?.addEventListener('click', () => { if (pointsDialog && !pointsDialog.open) showLockedDialog(pointsDialog); });
   $('#pointsModalClose')?.addEventListener('click', () => pointsDialog?.close());
+  $('#pointsCatalogLink')?.addEventListener('click', () => pointsDialog?.close());
   pointsDialog?.addEventListener('click', (event) => { if (event.target === pointsDialog) pointsDialog.close(); });
 
   $('#cartOpen').addEventListener('click', openCart);
@@ -668,7 +688,7 @@
   $('#orderForm').addEventListener('submit', submitOrder);
   $('#orderForm').addEventListener('input', () => showFormError(''));
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && Date.now() - S.loadedAt > 60000 && !dlg.open) load().then(() => { renderChips(); renderGrid(); renderCombos(); renderBar(false); }).catch(() => {});
+    if (document.visibilityState === 'visible' && Date.now() - S.loadedAt > 60000 && !dlg.open) load().then(() => { renderChips(); renderGrid(); renderCombos(); renderBayucoinRewards(); renderBar(false); }).catch(() => {});
   });
 
   // ------------------------------------------------------------ arranque
@@ -678,7 +698,7 @@
     try {
       await load();
       const catalogSection = $('#catalogo'); if (catalogSection) catalogSection.hidden = false;
-      renderSettings(); renderVisualAssets(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBar(false);
+      renderSettings(); renderVisualAssets(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBayucoinRewards(); renderBar(false);
     } catch (e) {
       const catalogSection = $('#catalogo'); if (catalogSection) catalogSection.hidden = false;
       $('#grid').innerHTML = ''; $('#grid').setAttribute('aria-busy', 'false');
