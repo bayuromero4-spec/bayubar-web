@@ -884,7 +884,7 @@
     const S = A.d.settings; const free = S.free_delivery_enabled === true;
     const visualKeys = [
       ['visual_combo_banner', 'Banner de ofertas y combos', 'Imagen principal del bloque de promociones', './assets/combos-bayu.svg'],
-      ['visual_points_banner', 'Banner de BAYU COIN', 'Imagen principal del programa de puntos', './assets/bayu-coin.svg'],
+      ['visual_points_banner', 'Banner de BAYU COIN', 'Imagen principal del programa de puntos', './assets/bayu-coin.webp?v=20261112-coin01'],
       ['visual_offers_banner', 'Imagen de sección de ofertas', 'Imagen de apoyo para la sección de ofertas del catálogo', '']
     ];
     const visualAssets = isOwner() ? `<section class="panel visual-assets-panel"><div class="visual-panel-heading"><div><h3>Gestión visual de BAYU BAR</h3><p class="sub">Cambia las imágenes de la tienda sin editar código ni volver a publicar.</p></div><span class="status st-aprobado">Solo dueño</span></div>
