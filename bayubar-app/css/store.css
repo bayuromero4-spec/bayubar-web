@@ -1733,3 +1733,31 @@ img{max-width:100%}
     mask-image:linear-gradient(90deg,transparent 0%,#000 12%,#000 72%,transparent 100%);
   }
 }
+
+
+/* BAYU BAR · ampliar producto dentro de las tarjetas del catálogo */
+/* El archivo conserva la botella completa; se reduce el margen visual interno */
+#grid .card .art{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:
+    radial-gradient(ellipse at 50% 55%,rgba(0,210,245,.12),transparent 68%),
+    linear-gradient(145deg,#0b1422,#080c16)!important;
+}
+#grid .card .art>img.ph{
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  padding:2px!important;
+  transform:scale(1.32)!important;
+  transform-origin:center bottom!important;
+}
+#grid .card:hover .art>img.ph{transform:scale(1.38)!important}
+@media(max-width:760px){
+  #grid .card .art>img.ph{transform:scale(1.22)!important}
+  #grid .card:hover .art>img.ph{transform:scale(1.26)!important}
+}
