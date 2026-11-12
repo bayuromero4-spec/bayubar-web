@@ -666,7 +666,20 @@
   const pointsDialog = $('#pointsPromoDialog');
   $('#pointsFeature')?.addEventListener('click', () => { if (pointsDialog && !pointsDialog.open) showLockedDialog(pointsDialog); });
   $('#pointsModalClose')?.addEventListener('click', () => pointsDialog?.close());
-  $('#pointsCatalogLink')?.addEventListener('click', () => pointsDialog?.close());
+  const rewardsDialog = $('#bayucoinRewardsDialog');
+  const openRewardsDialog = () => {
+    if (!rewardsDialog || rewardsDialog.open) return;
+    renderBayucoinRewards();
+    if (pointsDialog?.open) pointsDialog.close();
+    showLockedDialog(rewardsDialog);
+  };
+  $('#navBayucoin')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (pointsDialog && !pointsDialog.open) showLockedDialog(pointsDialog);
+  });
+  $('#pointsCatalogLink')?.addEventListener('click', openRewardsDialog);
+  $('#bayucoinRewardsClose')?.addEventListener('click', () => rewardsDialog?.close());
+  rewardsDialog?.addEventListener('click', (event) => { if (event.target === rewardsDialog) rewardsDialog.close(); });
   pointsDialog?.addEventListener('click', (event) => { if (event.target === pointsDialog) pointsDialog.close(); });
 
   $('#cartOpen').addEventListener('click', openCart);

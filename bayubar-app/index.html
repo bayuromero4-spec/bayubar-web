@@ -36,7 +36,7 @@
       <a href="#inicio" class="nav-active">⌂ <span>Inicio</span></a>
       <a href="#catalogo">▦ <span>Productos</span></a>
       <a href="#dailyOffers" id="navCombos">◇ <span>Promos</span></a>
-      <a href="#bayucoin-catalogo">✧ <span>BAYUCOIN</span></a>
+      <a href="#pointsPromoDialog" id="navBayucoin">✧ <span>BAYUCOIN</span></a>
     </nav>
     <a class="top-search" href="#search" aria-label="Buscar productos">⌕</a>
     <button class="cartbtn" id="cartOpen" type="button" aria-label="Abrir mi pedido">
@@ -106,16 +106,7 @@
   </section>
 
 
-  <section class="bayucoin-catalog-section" id="bayucoin-catalogo" aria-labelledby="bayucoinCatalogTitle">
-    <div class="wrap">
-      <div class="bayucoin-catalog-heading">
-        <div><p class="overline">PREMIOS EXCLUSIVOS</p><h2 id="bayucoinCatalogTitle">Catálogo <em>BAYUCOIN</em></h2><p>Canjea tus monedas por tus favoritos de BAYU BAR.</p></div>
-        <div class="bayucoin-catalog-rule"><strong>S/ 20 = 1 BAYUCOIN</strong><small>EN PRODUCTOS</small></div>
-      </div>
-      <div class="bayucoin-rewards-grid" id="bayucoinRewardsGrid" aria-live="polite"><div class="bayucoin-rewards-empty">Cargando premios disponibles…</div></div>
-      <p class="bayucoin-catalog-footnote">Premios sujetos a disponibilidad. Para solicitar un canje, consulta tu saldo por WhatsApp.</p>
-    </div>
-  </section>
+
 
   <dialog class="gift-promo-dialog points-promo-dialog combos-promo-dialog" id="combosPromoDialog" aria-labelledby="combosPromoTitle">
     <div class="gift-modal-shell points-modal-shell">
@@ -150,10 +141,28 @@
           <div class="points-modal-image"><img src="./assets/bayu-coin.webp?v=20261112-coin01" alt="Moneda BAYUCOIN de BAYU BAR"></div>
         </div>
         <p class="points-modal-note">Tus BAYUCOIN se acreditan cuando tu pedido está entregado. Revisa tu saldo y solicita tus premios por WhatsApp.</p>
-        <div class="points-modal-actions"><a class="btn points-modal-cta" id="pointsCatalogLink" href="#bayucoin-catalogo">Ver catálogo de premios <span aria-hidden="true">→</span></a><a class="points-modal-secondary" id="loyaltyWhatsApp" href="#" target="_blank" rel="noopener">Consultar mis BAYUCOIN por WhatsApp</a></div>
+        <div class="points-modal-actions"><a class="points-modal-whatsapp" id="loyaltyWhatsApp" href="#" target="_blank" rel="noopener"><span class="points-wa-icon" aria-hidden="true">◉</span> Consultar mis BAYUCOIN por WhatsApp</a><button class="btn points-modal-cta" id="pointsCatalogLink" type="button">Ver catálogo de premios <span aria-hidden="true">→</span></button></div>
       </div>
     </div>
   </dialog>
+
+
+  <dialog class="gift-promo-dialog points-promo-dialog bayucoin-rewards-dialog" id="bayucoinRewardsDialog" aria-labelledby="bayucoinCatalogTitle">
+    <div class="gift-modal-shell points-modal-shell">
+      <button class="gift-modal-close" type="button" id="bayucoinRewardsClose" aria-label="Cerrar catálogo de premios">×</button>
+        <div class="bayucoin-catalog-section" id="bayucoin-catalogo" aria-labelledby="bayucoinCatalogTitle">
+    <div class="wrap">
+      <div class="bayucoin-catalog-heading">
+        <div><p class="overline">PREMIOS EXCLUSIVOS</p><h2 id="bayucoinCatalogTitle">Catálogo <em>BAYUCOIN</em></h2><p>Canjea tus monedas por tus favoritos de BAYU BAR.</p></div>
+        <div class="bayucoin-catalog-rule"><strong>S/ 20 = 1 BAYUCOIN</strong><small>EN PRODUCTOS</small></div>
+      </div>
+      <div class="bayucoin-rewards-grid" id="bayucoinRewardsGrid" aria-live="polite"><div class="bayucoin-rewards-empty">Cargando premios disponibles…</div></div>
+      <p class="bayucoin-catalog-footnote">Premios sujetos a disponibilidad. Para solicitar un canje, consulta tu saldo por WhatsApp.</p>
+    </div>
+  </div>
+    </div>
+  </dialog>
+
 
 
 
