@@ -1840,3 +1840,23 @@ img{max-width:100%}
 .points-modal-actions{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .points-modal-secondary{font-size:12px;color:#85eaf0;text-decoration:none;font-weight:700}
 @media(max-width:640px){.bayucoin-catalog-heading{align-items:flex-start;flex-direction:column}.bayucoin-catalog-rule{width:100%;white-space:normal}.bayucoin-rewards-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bayucoin-reward-art{min-height:82px}.bayucoin-reward-info{padding:12px}.bayucoin-reward-info h3{font-size:14px}.bayucoin-reward-cost strong{font-size:14px}.bayucoin-reward-action{font-size:11px;padding:9px 8px}}
+
+/* BAYUCOIN · catálogo independiente y acciones principales */
+.bayucoin-rewards-dialog{width:min(920px,calc(100vw - 24px));max-width:920px}
+.bayucoin-rewards-dialog .bayucoin-catalog-section{padding:0;background:transparent;border:0}
+.bayucoin-rewards-dialog .bayucoin-catalog-heading{padding-right:42px}
+.bayucoin-rewards-dialog .bayucoin-catalog-rule{display:none}
+.points-modal-actions{display:flex;flex-direction:row;align-items:stretch;flex-wrap:wrap;gap:10px}
+.points-modal-actions .points-modal-whatsapp,
+.points-modal-actions .points-modal-cta{min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 16px;border-radius:999px;text-decoration:none;font-size:12px;font-weight:850}
+.points-modal-actions .points-modal-whatsapp{background:#168b50;color:#fff;border:1px solid #20b96d;box-shadow:0 7px 22px rgba(22,139,80,.22)}
+.points-wa-icon{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#168b50;font-size:15px}
+.points-modal-actions .points-modal-cta{align-self:auto;border:1px solid rgba(0,217,242,.45);background:rgba(0,217,242,.1);color:#8beeff;cursor:pointer}
+.points-modal-actions .points-modal-whatsapp:hover{background:#117842}
+.points-modal-actions .points-modal-cta:hover{background:rgba(0,217,242,.18)}
+@media(max-width:640px){
+ .bayucoin-rewards-dialog{width:calc(100vw - 14px);max-height:92vh}
+ .bayucoin-rewards-dialog .gift-modal-shell{padding:20px 14px}
+ .points-modal-actions{display:grid;grid-template-columns:1fr;gap:9px}
+ .points-modal-actions .points-modal-whatsapp,.points-modal-actions .points-modal-cta{width:100%;min-height:48px}
+}
