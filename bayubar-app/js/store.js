@@ -546,7 +546,18 @@
     $('#waHero').href = hello; $('#waContact').href = hello;
     const loyalty = $('#loyaltyWhatsApp');
     if (loyalty) loyalty.href = waLink('Hola BAYU BAR, quiero consultar mi saldo de puntos y las recompensas disponibles. Mi nombre y celular son: ');
-    if (loyalty) loyalty.href = waLink('Hola BAYU BAR, quiero consultar mi saldo de puntos y las recompensas disponibles. Mi nombre y celular son: ');
+    let floating = $('#whatsappFloat');
+    if (!floating) {
+      floating = document.createElement('a');
+      floating.id = 'whatsappFloat';
+      floating.className = 'whatsapp-float';
+      floating.target = '_blank';
+      floating.rel = 'noopener';
+      floating.setAttribute('aria-label', 'Contactar a BAYU BAR por WhatsApp');
+      floating.innerHTML = '<img src="./assets/whatsapp-float.svg" alt="" width="58" height="58"><span>¿Hablamos?</span>';
+      document.body.appendChild(floating);
+    }
+    floating.href = hello;
     $('#proofFree').hidden = !free;
     $('#benefitDelivery').textContent = free ? (min > 0 ? `Gratis desde ${money(min)}` : 'Gratis por reapertura') : 'Cobertura en San Miguel';
     const items = ['BAYU BAR', 'DRINKS · DELIVERY', ...(free ? ['DELIVERY GRATIS'] : []), 'SAN MIGUEL DE PALLAQUES', 'ATENCIÓN +18'];
