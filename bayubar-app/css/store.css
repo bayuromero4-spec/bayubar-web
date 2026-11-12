@@ -1761,3 +1761,31 @@ img{max-width:100%}
   #grid .card .art>img.ph{transform:scale(1.22)!important}
   #grid .card:hover .art>img.ph{transform:scale(1.26)!important}
 }
+
+
+/* BAYU BAR · asegurar hero nuevo también en móviles y limpiar capas heredadas */
+.hero-bg-image{
+  z-index:0!important;
+  opacity:1!important;
+  object-position:center 48%;
+}
+.hero:before{
+  z-index:1!important;
+  background:
+    linear-gradient(90deg,rgba(3,7,15,.72) 0%,rgba(3,7,15,.48) 48%,rgba(3,7,15,.12) 100%),
+    linear-gradient(0deg,rgba(3,7,15,.42),rgba(3,7,15,.06) 55%,rgba(3,7,15,.18))!important;
+}
+.hero:after{z-index:1!important;pointer-events:none}
+.hero-in{position:relative;z-index:2!important}
+@media(max-width:650px){
+  .hero-bg-image{
+    opacity:1!important;
+    object-position:58% center!important;
+    content:url("../assets/hero-bayu.webp?v=20261111-mobile2");
+  }
+  .hero:before{
+    background:
+      linear-gradient(90deg,rgba(3,7,15,.68) 0%,rgba(3,7,15,.38) 74%,rgba(3,7,15,.14) 100%),
+      linear-gradient(0deg,rgba(3,7,15,.38),rgba(3,7,15,.08) 58%,rgba(3,7,15,.18))!important;
+  }
+}
