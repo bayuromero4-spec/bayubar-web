@@ -554,7 +554,7 @@
       floating.target = '_blank';
       floating.rel = 'noopener';
       floating.setAttribute('aria-label', 'Contactar a BAYU BAR por WhatsApp');
-      floating.innerHTML = '<img src="./assets/whatsapp-float.webp?v=20261112" alt="" width="58" height="58"><span>¿Hablamos?</span>';
+      floating.innerHTML = '<img src="./assets/whatsapp-float.svg" alt="" width="58" height="58"><span>¿Hablamos?</span>';
       document.body.appendChild(floating);
     }
     floating.href = hello;
