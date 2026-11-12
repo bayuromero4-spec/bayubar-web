@@ -904,7 +904,8 @@
         <p style="margin-top:12px"><button class="btn sm" type="button" data-act="zonenew">+ Nueva zona</button></p></section>
       <section class="panel"><h3>Negocio</h3>
         <div class="item"><div class="main"><b>WhatsApp de pedidos</b><small>${esc(S.whatsapp || '')}</small></div><button class="btn ghost sm" type="button" data-act="wa">Cambiar</button></div>
-        <div class="item"><div class="main"><b>Nombre del negocio</b><small>${esc(S.store_name || '')}</small></div><button class="btn ghost sm" type="button" data-act="storename">Cambiar</button></div></section>
+        <div class="item"><div class="main"><b>Nombre del negocio</b><small>${esc(S.store_name || '')}</small></div><button class="btn ghost sm" type="button" data-act="storename">Cambiar</button></div>
+        <div class="item"><div class="main"><b>Botón flotante de regalo</b><small>${S.gift_float_enabled === false ? 'Oculto en la tienda' : 'Visible cuando existe una promoción de regalo activa'}</small></div><button class="btn ghost sm" type="button" data-act="giftfloattoggle">${S.gift_float_enabled === false ? 'Activar' : 'Desactivar'}</button></div></section>
       <section class="panel"><h3>Avisos de pedidos nuevos</h3>
         <div class="item"><div class="main"><b>Este dispositivo</b><small>${ps === 'on' ? 'Recibirá una notificación en cuanto entre un pedido' : ps === 'denied' ? 'Bloqueado: permite las notificaciones en la configuración del navegador' : ps === 'unsupported' ? 'Este navegador no admite avisos (en iPhone agrega el panel a la pantalla de inicio)' : 'Desactivado'}</small></div>
           ${ps === 'on' ? '<button class="btn ghost sm" type="button" data-act="pushoff">Desactivar</button>' : ps === 'off' ? '<button class="btn sm" type="button" data-act="pushon">Activar aquí</button>' : ''}</div>
@@ -1098,6 +1099,7 @@
       submit: async () => { const v = $('#waNum').value.replace(/\s/g, ''); if (!/^[0-9]{8,15}$/.test(v)) throw new Error('Escribe solo números con código de país (ej. 51960577902).'); await settingSubmit('whatsapp', v, 'WhatsApp del negocio'); } }),
     storename: () => openForm({ title: 'Nombre del negocio', ok: 'Guardar', body: `<label class="field">Nombre<input id="snName" type="text" maxlength="60" value="${esc(A.d.settings.store_name || '')}"></label>`,
       submit: async () => { const v = $('#snName').value.trim(); if (v.length < 2) throw new Error('Escribe un nombre válido.'); await settingSubmit('store_name', v, 'Nombre del negocio'); } }),
+    giftfloattoggle: async () => { try { const next = A.d.settings.gift_float_enabled === false; await settingSubmit('gift_float_enabled', next, 'Botón flotante de regalo'); await reload(); } catch (e) { toast(errMsg(e), 'err'); } },
     zonenew: () => zoneForm(null),
     zoneedit: (el) => zoneForm(A.d.zones.find((z) => z.id === el.dataset.id)),
     zonetoggle: async (el) => {
