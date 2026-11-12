@@ -280,7 +280,8 @@
       <div class="card-foot"><span class="prices">${price}</span><span class="act">${actionsHtml(key, c.name, max, q)}</span></div></div></article>`;
   }
   function activeGiftPromo() {
-    const p = (S.promotions || []).find((x) => x && x.ticket_code);
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' });
+    const p = (S.promotions || []).find((x) => x && x.ticket_code && x.active !== false && (!x.starts_on || x.starts_on <= today) && (!x.ends_on || x.ends_on >= today));
     return p || null;
   }
   function giftUnlocked() {
@@ -289,6 +290,7 @@
   }
   function renderPromoTicket() {
     const promo = activeGiftPromo();
+    const enabled = S.settings.gift_float_enabled !== false;
     let trigger = $('#giftFloatButton');
     let dialog = $('#giftPromoDialog');
     if (!trigger) {
@@ -315,10 +317,13 @@
       dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
       $('.gift-modal-close', dialog).addEventListener('click', () => dialog.close());
     }
-    if (!promo) {
-      $('.gift-modal-content', dialog).innerHTML = '<div class="gift-modal-topline"><span class="gift-modal-kicker">BENEFICIOS BAYU</span><span class="gift-modal-pill">REGALO</span></div><h2 id="giftPromoTitle">Tu regalo BAYU</h2><p class="gift-modal-description">En este momento no hay una promoción de regalo activa. Vuelve pronto para descubrir el próximo beneficio.</p>';
+    if (!promo || !enabled) {
+      trigger.hidden = true;
+      trigger.setAttribute('aria-hidden', 'true');
       return;
     }
+    trigger.hidden = false;
+    trigger.setAttribute('aria-hidden', 'false');
     const missing = Math.max(0, Number(promo.min_subtotal) - cartSub());
     const unlocked = missing <= 0;
     const threshold = Math.max(1, Number(promo.min_subtotal) || 1);
@@ -431,7 +436,7 @@
     const giftButton = $('#giftFloatButton');
     if (giftButton) {
       // El acceso al regalo aparece únicamente cuando el CTA de pedido está oculto.
-      giftButton.hidden = n > 0 || cartDialogOpen;
+      giftButton.hidden = !activeGiftPromo() || S.settings.gift_float_enabled === false || n > 0 || cartDialogOpen;
       giftButton.setAttribute('aria-hidden', giftButton.hidden ? 'true' : 'false');
     }
     if (bump) { [$('#cartCount'), $('#dockCount')].forEach((el) => { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }); }
