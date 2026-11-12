@@ -1794,19 +1794,17 @@ img{max-width:100%}
 /* BAYU BAR · acceso flotante a WhatsApp */
 .whatsapp-float{
   position:fixed;right:22px;bottom:24px;z-index:80;
-  display:flex;align-items:center;gap:10px;
-  padding:7px 16px 7px 7px;border:1px solid rgba(255,255,255,.18);
-  border-radius:999px;background:rgba(9,18,29,.94);
-  color:#fff;text-decoration:none;font-weight:800;font-size:13px;
-  box-shadow:0 8px 28px rgba(0,0,0,.38),0 0 22px rgba(0,210,125,.18);
+  display:flex;align-items:center;justify-content:center;
+  width:64px;height:64px;padding:5px;
+  border:1px solid rgba(255,255,255,.2);border-radius:50%;
+  background:rgba(9,18,29,.88);text-decoration:none;
+  box-shadow:0 8px 28px rgba(0,0,0,.38),0 0 22px rgba(0,210,125,.2);
   -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
   transition:transform .2s ease,box-shadow .2s ease;
 }
-.whatsapp-float:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.45),0 0 26px rgba(0,210,125,.28)}
-.whatsapp-float img{display:block;width:48px;height:48px;object-fit:contain;border-radius:50%}
-.whatsapp-float span{white-space:nowrap}
+.whatsapp-float:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.45),0 0 26px rgba(0,210,125,.3)}
+.whatsapp-float img{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%}
 @media(max-width:650px){
- .whatsapp-float{right:14px;bottom:calc(94px + env(safe-area-inset-bottom));padding:5px 12px 5px 5px;gap:7px;font-size:12px}
- .whatsapp-float img{width:42px;height:42px}
+ .whatsapp-float{right:14px;bottom:calc(94px + env(safe-area-inset-bottom));width:56px;height:56px;padding:4px}
 }
 @media(prefers-reduced-motion:reduce){.whatsapp-float{transition:none}}
