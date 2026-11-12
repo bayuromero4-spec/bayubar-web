@@ -169,7 +169,7 @@
     const pointsUrl = safeUrl(S.settings.visual_points_banner);
     const offersUrl = safeUrl(S.settings.visual_offers_banner);
     if (combo) combo.src = comboUrl || './assets/combos-bayu.svg';
-    if (points) points.src = pointsUrl || './assets/bayu-coin.svg';
+    if (points) points.src = pointsUrl || './assets/bayu-coin.webp?v=20261112-coin01';
     const offers = $('#dailyOffers');
     if (offers) {
       if (offersUrl) {
