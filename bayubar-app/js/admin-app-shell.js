@@ -14,7 +14,8 @@
  nav.innerHTML=[
   ['resumen','Inicio','home'],['reportes','Balance','chart'],['ventas','Ventas','plus'],['inventario','Inventario','box'],['more','Más','more']
  ].map(([id,label,icon])=>'<button type="button" class="bb-nav-item '+(id==='ventas'?'bb-main-action':'')+'" data-bb-go="'+id+'">'+(id==='ventas'?'<span class="bb-nav-icon">':'')+'<svg viewBox="0 0 24 24" aria-hidden="true">'+icons[icon]+'</svg>'+(id==='ventas'?'</span>':'')+'<span>'+label+'</span></button>').join('');
- nav.hidden=true;\n document.body.appendChild(nav);
+ nav.hidden = true;
+ document.body.appendChild(nav);
  const backdrop=document.createElement('div');backdrop.className='bb-more-backdrop';backdrop.hidden=true;
  backdrop.innerHTML='<section class="bb-more-sheet" role="dialog" aria-modal="true" aria-label="Más módulos"><div class="bb-more-head"><h3>Todos los módulos</h3><button type="button" class="btn ghost sm" data-bb-close>Cerrar</button></div><div class="bb-more-grid"></div><p class="bb-feature-note">Los módulos actuales se mantienen disponibles. Las cuentas por cobrar y por pagar requieren implementar un registro de crédito y abonos antes de mostrar saldos como si fueran deudas reales.</p></section>';
  document.body.appendChild(backdrop);
@@ -33,6 +34,7 @@
  window.addEventListener('hashchange',active);
  const oldTabs=document.getElementById('tabs');
  if(oldTabs){oldTabs.setAttribute('aria-hidden','true');}
+ nav.hidden = app.hidden;
  const obs=new MutationObserver(()=>{nav.hidden=app.hidden;if(!app.hidden)active();});
  obs.observe(app,{attributes:true,attributeFilter:['hidden']});
  active();
