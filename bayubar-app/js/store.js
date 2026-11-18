@@ -207,7 +207,9 @@
     if (!cats.includes(S.cat)) S.cat = 'Todo';
     $('#chips').innerHTML = cats.map((c) => {
       const n = c === 'Todo' ? S.products.length : S.products.filter((p) => p.category === c).length;
-      return `<button class="chip" type="button" data-cat="${esc(c)}" aria-pressed="${c === S.cat}">${esc(c)} <small>${n}</small></button>`;
+      const key = norm(c);
+      const icon = c === 'Todo' ? '✦' : /cerveza/.test(key) ? '🍺' : /whisky|whiskey|ron/.test(key) ? '🥃' : /pisco|vodka/.test(key) ? '🍸' : /vino|espum/.test(key) ? '🍷' : /gaseosa|agua|refresco/.test(key) ? '🥤' : /extra|hielo/.test(key) ? '🧊' : '🍹';
+      return `<button class="chip" type="button" data-cat="${esc(c)}" aria-pressed="${c === S.cat}"><span class="chip-icon" aria-hidden="true">${icon}</span><span class="chip-label">${esc(c)}</span><small>${n}</small></button>`;
     }).join('');
   }
 
