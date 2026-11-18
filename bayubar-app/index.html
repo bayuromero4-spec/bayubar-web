@@ -31,7 +31,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./css/base.css">
-<link rel="stylesheet" href="./css/store.css?v=20261112-gift-toggle01">
+<link rel="stylesheet" href="./css/store.css?v=20261112-gift-toggle01">\n<link rel="stylesheet" href="./css/store-optimization.css?v=20261118-01"">
 </head>
 <body>
 
@@ -101,22 +101,7 @@
     <div class="grid offers-grid" id="offersGrid"></div>
   </section>
 
-  <section class="wrap home-feature-panels" aria-label="Beneficios BAYU BAR">
-    <button class="home-feature-panel combo-feature" type="button" id="comboFeature" aria-haspopup="dialog" aria-controls="combosPromoDialog">
-      <span class="feature-eyebrow">PROMOCIONES BAYUBAR</span>
-      <span class="feature-title">Ofertas y<br><em>Combos BAYUBAR.</em></span>
-      <span class="feature-description">Combos para compartir y ofertas activas para aprovechar.</span>
-      <span class="feature-art combo-art" aria-hidden="true"><img src="./assets/combos-bayu.svg" alt=""></span>
-      <span class="feature-link">Explorar combos →</span>
-    </button>
-    <button class="home-feature-panel points-feature" type="button" id="pointsFeature" aria-haspopup="dialog" aria-controls="pointsPromoDialog">
-      <span class="feature-eyebrow">PROGRAMA DE FIDELIDAD</span>
-      <span class="feature-title">Acumula<br><em>Puntos BAYUCOIN.</em></span>
-      <span class="feature-description">Cada compra suma. Acumula BAYUCOIN y canjéalos por beneficios.</span>
-      <span class="feature-art points-art" aria-hidden="true"><img src="./assets/bayu-coin.webp?v=20261112-coin01" alt=""></span>
-      <span class="feature-link">Conoce tus puntos →</span>
-    </button>
-  </section>
+
 
 
 
@@ -193,6 +178,23 @@
     <div id="gridMsg"></div>
   </section>
 
+  <section class="wrap home-feature-panels" aria-label="Beneficios BAYU BAR">
+    <button class="home-feature-panel combo-feature" type="button" id="comboFeature" aria-haspopup="dialog" aria-controls="combosPromoDialog">
+      <span class="feature-eyebrow">PROMOCIONES BAYUBAR</span>
+      <span class="feature-title">Ofertas y<br><em>Combos BAYUBAR.</em></span>
+      <span class="feature-description">Combos para compartir y ofertas activas para aprovechar.</span>
+      <span class="feature-art combo-art" aria-hidden="true"><img src="./assets/combos-bayu.svg" alt=""></span>
+      <span class="feature-link">Explorar combos →</span>
+    </button>
+    <button class="home-feature-panel points-feature" type="button" id="pointsFeature" aria-haspopup="dialog" aria-controls="pointsPromoDialog">
+      <span class="feature-eyebrow">PROGRAMA DE FIDELIDAD</span>
+      <span class="feature-title">Acumula<br><em>Puntos BAYUCOIN.</em></span>
+      <span class="feature-description">Cada compra suma. Acumula BAYUCOIN y canjéalos por beneficios.</span>
+      <span class="feature-art points-art" aria-hidden="true"><img src="./assets/bayu-coin.webp?v=20261112-coin01" alt=""></span>
+      <span class="feature-link">Conoce tus puntos →</span>
+    </button>
+  </section>
+
 
 
   <section class="wrap" id="delivery">
@@ -261,15 +263,14 @@
           <label class="field">Número de celular<input id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" required placeholder="Ej. 987 654 321"></label>
           <label class="field">Zona de entrega<select id="fZone" name="zone" required></select></label>
           <label class="field">Dirección de entrega<textarea id="fAddress" name="address" maxlength="300" required placeholder="Calle, número, barrio y referencia"></textarea></label>
-          <label class="field">Código de regalo (opcional)<input id="fTicket" name="ticket" type="text" maxlength="24" autocomplete="off" placeholder="Ingresa tu código BAYU"><small class="field-hint">Si tienes un código promocional, escríbelo aquí.</small></label>
+          <details class="checkout-extras"><summary>¿Tienes un código promocional?</summary><label class="field">Código BAYU (opcional)<input id="fTicket" name="ticket" type="text" maxlength="24" autocomplete="off" placeholder="Ingresa tu código BAYU"><small class="field-hint">Si tienes un código promocional, escríbelo aquí.</small></label></details>
           <fieldset class="pay" aria-label="Método de pago">
             <legend>¿Cómo deseas pagar?</legend>
             <label class="radio"><input type="radio" name="payment" value="Yape / Plin" checked><span>Yape / Plin</span></label>
             <label class="radio"><input type="radio" name="payment" value="Efectivo"><span>Efectivo</span></label>
           </fieldset>
-          <label class="field">Indicaciones (opcional)<input id="fNote" name="note" type="text" maxlength="200" placeholder="Ej. tocar el timbre, pagar con S/ 100"></label>
-          <label class="check"><input type="checkbox" id="fAge" required><span>Confirmo que soy mayor de 18 años y podrán pedirme mi documento al recibir.</span></label>
-          <label class="check"><input type="checkbox" id="fMarketing"><span>Quiero recibir novedades y promociones de BAYU BAR por WhatsApp (opcional).</span></label>
+          <details class="checkout-extras"><summary>Agregar indicaciones o recibir promociones (opcional)</summary><label class="field">Indicaciones para la entrega<input id="fNote" name="note" type="text" maxlength="200" placeholder="Ej. tocar el timbre, pagar con S/ 100"></label><label class="check"><input type="checkbox" id="fMarketing"><span>Quiero recibir novedades y promociones de BAYU BAR por WhatsApp.</span></label></details>
+          <label class="check age-confirm"><input type="checkbox" id="fAge" required><span>Confirmo que soy mayor de 18 años y podrán pedirme mi documento al recibir.</span></label>
           <div id="formError" class="error-box" role="alert" hidden></div>
         </div>
         <div class="dlg-foot">
@@ -304,6 +305,6 @@
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script defer src="./js/config.js"></script>
 <script defer src="./js/common.js"></script>
-<script defer src="./js/store.js?v=20261112-gift-toggle01"></script>
+<script defer src="./js/store.js?v=20261118-01"></script>
 </body>
 </html>
