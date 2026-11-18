@@ -145,8 +145,8 @@
       ]);
       // El catálogo depende de productos; fallos en datos auxiliares no deben ocultarlo.
       if (pr.error) throw pr.error;
-      S.promotions = [];
-      S.rewards = [];
+      S.promotions = S.promotions || [];
+      S.rewards = S.rewards || [];
       S.products = pr.data || [];
       S.combos = co.error ? [] : (co.data || []);
       S.zones = zo.error ? [] : (zo.data || []);
