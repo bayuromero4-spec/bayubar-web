@@ -137,18 +137,16 @@
       S.settings.free_delivery_enabled = true; S.promotions = []; S.rewards = [];
       $('#demoBanner').hidden = false;
     } else {
-      const [pr, co, zo, se, pm, rw] = await Promise.all([
+      const [pr, co, zo, se] = await Promise.all([
         sb.from('public_products').select('id,name,category,size,description,price,promo_price,promo_until,image_url,available').order('category').order('name'),
         sb.from('public_combos').select('id,name,description,price,image_url,ends_on,items,regular_price,available_units').order('name'),
         sb.from('delivery_zones').select('id,name,fee').eq('active', true).order('fee').order('name'),
-        sb.from('settings').select('key,value'),
-        sb.from('public_bayu_promotion').select('*').limit(1),
-        sb.from('loyalty_rewards').select('id,title,description,points_cost,active,max_redemptions,redemptions_count').eq('active', true).order('points_cost')
+        sb.from('settings').select('key,value')
       ]);
       // El catálogo depende de productos; fallos en datos auxiliares no deben ocultarlo.
       if (pr.error) throw pr.error;
-      S.promotions = pm.error ? [] : (pm.data || []);
-      S.rewards = rw.error ? [] : (rw.data || []).filter(r => r.max_redemptions == null || Number(r.redemptions_count || 0) < Number(r.max_redemptions));
+      S.promotions = S.promotions || [];
+      S.rewards = S.rewards || [];
       S.products = pr.data || [];
       S.combos = co.error ? [] : (co.data || []);
       S.zones = zo.error ? [] : (zo.data || []);
@@ -161,6 +159,16 @@
       if (max < 1) delete S.cart[key]; else S.cart[key] = Math.min(S.cart[key], max);
     });
     saveCart();
+  }
+  async function loadExtras() {
+    if (S.demo || !sb) return;
+    const [pm, rw] = await Promise.all([
+      sb.from('public_bayu_promotion').select('*').limit(1),
+      sb.from('loyalty_rewards').select('id,title,description,points_cost,active,max_redemptions,redemptions_count').eq('active', true).order('points_cost')
+    ]);
+    S.promotions = pm.error ? [] : (pm.data || []);
+    S.rewards = rw.error ? [] : (rw.data || []).filter(r => r.max_redemptions == null || Number(r.redemptions_count || 0) < Number(r.max_redemptions));
+    renderPromoTicket(); renderBayucoinRewards(); renderBar(false);
   }
   function byId2(list, id) { return list.find((p) => p.id === id); }
 
@@ -712,6 +720,7 @@
       await load();
       const catalogSection = $('#catalogo'); if (catalogSection) catalogSection.hidden = false;
       renderSettings(); renderVisualAssets(); renderPromoTicket(); renderCombos(); renderChips(); renderGrid(); renderHomeCategories(); renderOffers(); renderBayucoinRewards(); renderBar(false);
+      loadExtras().catch(() => {});
     } catch (e) {
       const catalogSection = $('#catalogo'); if (catalogSection) catalogSection.hidden = false;
       $('#grid').innerHTML = ''; $('#grid').setAttribute('aria-busy', 'false');
